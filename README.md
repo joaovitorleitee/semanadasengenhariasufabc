@@ -60,19 +60,35 @@ aplicadas foram (nesta ordem): criação das tabelas + RLS, seed de conteúdo e
 correção de `search_path` da função de trigger. Peça para o Claude regenerar
 o SQL caso precise.
 
-### Criar o usuário administrador
+### Login do admin — senha única
 
-Não existe mais senha fixa no código — o login do `/admin` usa e-mail e senha
-reais via Supabase Auth. Para criar o primeiro administrador:
+O `/admin` usa uma **senha única e compartilhada**: qualquer pessoa que souber
+essa senha consegue entrar e editar o site — não é preciso e-mail nem criar
+uma conta por pessoa.
+
+Por trás dos panos, essa senha aciona uma conta "de serviço" real no Supabase
+Auth (assim o banco continua protegido por autenticação de verdade, via RLS —
+só o login ficou mais simples). Isso é resolvido inteiramente no servidor
+(`src/app/api/admin-login/route.js`); a senha digitada nunca é comparada no
+navegador nem aparece no código enviado ao usuário.
+
+Para configurar:
 
 1. Acesse [supabase.com/dashboard](https://supabase.com/dashboard) → projeto `seufabc-2026`
 2. **Authentication → Users → Add user**
-3. Preencha e-mail e senha, marque **Auto Confirm User**
-4. Pronto — essa conta já consegue entrar em `/admin`
+3. Use exatamente o e-mail e a senha que estão em `ADMIN_ACCOUNT_EMAIL` /
+   `ADMIN_ACCOUNT_PASSWORD` no `.env.local.example` (ou gere os seus e ajuste
+   as variáveis de ambiente para combinar) — marque **Auto Confirm User**
+4. Defina `ADMIN_SHARED_PASSWORD` com a senha que a equipe vai efetivamente
+   digitar em `/admin` — essa é a única que precisa ser divulgada ao time
+5. Cadastre as três variáveis (`ADMIN_SHARED_PASSWORD`,
+   `ADMIN_ACCOUNT_EMAIL`, `ADMIN_ACCOUNT_PASSWORD`) também nas Environment
+   Variables da Vercel — **sem** o prefixo `NEXT_PUBLIC_`, então marque como
+   **Secret** lá (diferente das duas variáveis do Supabase, que são públicas)
 
-Repita para cada pessoa que for administrar o site. Não há tela de
-autocadastro pública (por segurança), então só quem tiver conta criada assim
-consegue editar o conteúdo.
+Se um dia quiser trocar a senha da equipe, basta atualizar
+`ADMIN_SHARED_PASSWORD` na Vercel e fazer um redeploy — não precisa mexer na
+conta de serviço nem no Supabase.
 
 ## Rodando localmente
 
