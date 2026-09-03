@@ -18,7 +18,7 @@ export default function SiteFooter({ content }) {
         </div>
         <div>
           <strong style={{ display: "block", marginBottom: 10, fontSize: 14, color: BRAND.yellow }}>Navegação</strong>
-          {[["/", "Início"], ["/evento", "O Evento"], ["/engenharias", "Engenharias"], ["/noticias", "Notícias"]].map(([href, label]) => (
+          {[["/", "Início"], ["/evento", "O Evento"], ["/engenharias", "Engenharias"], ["/noticias", "Notícias"], ["/patrocinadores", "Patrocinadores"]].map(([href, label]) => (
             <Link key={href} href={href} style={{ display: "block", color: "#CFE6D7", padding: "4px 0", fontSize: 14, textDecoration: "none" }}>
               {label}
             </Link>

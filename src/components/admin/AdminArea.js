@@ -7,6 +7,7 @@ import { useSiteContent } from "@/lib/useSiteContent";
 import PostsManager from "./PostsManager";
 import SectionEditor from "./SectionEditor";
 import CourseForm from "./CourseForm";
+import SponsorsManager from "./SponsorsManager";
 import { iconBtn } from "./adminStyles";
 
 function EngenhariasEditor({ contentStore, notify }) {
@@ -53,6 +54,7 @@ export default function AdminArea({ onLogout, notify }) {
   const contentStore = useSiteContent();
   const tabs = [
     { id: "posts", label: "Notícias" },
+    { id: "patrocinadores", label: "Patrocinadores" },
     { id: "home", label: "Início" },
     { id: "evento", label: "O Evento" },
     { id: "engenharias", label: "Engenharias" },
@@ -137,6 +139,25 @@ export default function AdminArea({ onLogout, notify }) {
       )}
 
       {tab === "engenharias" && <EngenhariasEditor contentStore={contentStore} notify={notify} />}
+
+      {tab === "patrocinadores" && (
+        <>
+          <div style={{ marginBottom: 30, paddingBottom: 26, borderBottom: `1px solid ${BRAND.border}` }}>
+            <SectionEditor
+              title="Cabeçalho da seção de patrocinadores" description="Etiqueta, título e subtítulo mostrados acima da lista de patrocinadores."
+              values={contentStore.content.patrocinadores}
+              onSave={(form) => contentStore.updateSection("patrocinadores", form)}
+              notify={notify}
+              fields={[
+                { key: "eyebrow", label: "Etiqueta", type: "text" },
+                { key: "title", label: "Título da seção", type: "text" },
+                { key: "subtitle", label: "Subtítulo", type: "text" },
+              ]}
+            />
+          </div>
+          <SponsorsManager notify={notify} />
+        </>
+      )}
 
       {tab === "footer" && (
         <SectionEditor

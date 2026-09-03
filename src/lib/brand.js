@@ -11,6 +11,7 @@ export const BRAND = {
 };
 
 export const CATEGORIES = ["Comunicado", "Palestra", "Minicurso", "Patrocínio", "Ação Social", "Geral"];
+export const SPONSOR_TIERS = ["Diamante", "Ouro", "Prata", "Bronze", "Apoio"];
 
 // Usado apenas como fallback enquanto os dados carregam do Supabase ou caso
 // uma seção ainda não exista na tabela site_content.
@@ -39,6 +40,11 @@ export const DEFAULT_CONTENT = {
   noticias: {
     eyebrow: "ACOMPANHE",
     title: "Notícias e comunicados",
+  },
+  patrocinadores: {
+    eyebrow: "PARCEIROS",
+    title: "Quem apoia a Semana das Engenharias",
+    subtitle: "Empresas e instituições que tornam o evento possível.",
   },
   footer: {
     title: "SEMANA DAS ENGENHARIAS DA UFABC",

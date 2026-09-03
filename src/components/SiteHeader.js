@@ -11,6 +11,7 @@ const LINKS = [
   { href: "/evento", label: "O Evento" },
   { href: "/engenharias", label: "Engenharias" },
   { href: "/noticias", label: "Notícias" },
+  { href: "/patrocinadores", label: "Patrocinadores" },
 ];
 
 export default function SiteHeader() {

@@ -49,8 +49,11 @@ As tabelas já foram criadas e populadas com o conteúdo atual do site:
   (`draft`/`published`), datas. Leitura pública liberada apenas para posts
   `published`; criar/editar/excluir exige estar autenticado.
 - **`site_content`** — uma linha por seção (`hero`, `evento`, `noticias`,
-  `footer`, `engenharias`), com o conteúdo em JSON. Leitura pública liberada
-  para todo mundo; escrita exige estar autenticado.
+  `patrocinadores`, `footer`, `engenharias`), com o conteúdo em JSON. Leitura
+  pública liberada para todo mundo; escrita exige estar autenticado.
+- **`sponsors`** — patrocinadores: nome, logo (URL), site, categoria/cota,
+  descrição, ordem de exibição e status (`active`/`inactive`). Mesma regra de
+  permissão: público só vê os `active`; autenticado vê e edita todos.
 
 Tudo isso é reforçado por **Row Level Security (RLS)** no Postgres — não é uma
 regra só no front-end.
@@ -136,12 +139,13 @@ Em `/admin`, depois de logar:
 - **Início** — selo, título, subtítulo, textos dos botões, data e local
 - **O Evento** — textos de "O Evento" e "Responsabilidade Social"
 - **Engenharias** — nome, campus, perfil do curso e áreas de atuação de cada um dos 8 cursos
+- **Patrocinadores** — cabeçalho da seção + cadastrar/editar/ativar-ocultar/excluir empresas patrocinadoras (nome, logo, site, categoria)
 - **Rodapé** — nome exibido, descrição, e-mail e endereço
 
 ## Notas
 
 - A fonte Metropolis está incluída em `src/fonts/` sob licença SIL Open Font
   License (arquivo `LICENSE.txt` na mesma pasta) — pode ser usada comercialmente.
-- As imagens de capa dos posts são informadas por URL (não há upload de
-  arquivo neste momento). Se quiser upload direto, dá para adicionar
-  Supabase Storage depois.
+- As imagens de capa dos posts e os logos dos patrocinadores são informados
+  por URL (não há upload de arquivo neste momento). Se quiser upload direto
+  pelo admin, dá para adicionar Supabase Storage depois.
