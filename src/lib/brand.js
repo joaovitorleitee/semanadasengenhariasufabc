@@ -11,7 +11,7 @@ export const BRAND = {
 };
 
 export const CATEGORIES = ["Comunicado", "Palestra", "Minicurso", "Patrocínio", "Ação Social", "Geral"];
-export const SPONSOR_TIERS = ["Diamante", "Ouro", "Prata", "Bronze", "Apoio"];
+export const SPONSOR_TIERS = ["Diamante", "Ouro", "Prata", "Bronze", "Apoio", "Cobre"];
 
 // Usado apenas como fallback enquanto os dados carregam do Supabase ou caso
 // uma seção ainda não exista na tabela site_content.
