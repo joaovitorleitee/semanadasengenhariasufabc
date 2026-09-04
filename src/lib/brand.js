@@ -23,8 +23,8 @@ export const DEFAULT_CONTENT = {
       "Cinco dias de palestras, minicursos e trocas entre estudantes, pesquisadores, profissionais e empresas nas oito engenharias da UFABC — do ensino médio ao mercado de trabalho.",
     ctaPrimary: "Conheça as engenharias",
     ctaSecondary: "Ver notícias",
-    date: "Data a confirmar — 2026",
-    local: "Campus Santo André e São Bernardo do Campo",
+    date: "Dia 21 a 25 de setembro de 2026",
+    local: "Campus somente de Santo André",
   },
   evento: {
     eyebrow: "O EVENTO",
