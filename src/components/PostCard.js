@@ -6,7 +6,7 @@ import { BRAND, fmtDate } from "@/lib/brand";
 
 export default function PostCard({ post }) {
   return (
-    <Link href={`/noticias/${post.slug}`} style={{ textAlign: "left", background: "#fff", border: `1px solid ${BRAND.border}`, borderRadius: 10, overflow: "hidden", display: "flex", flexDirection: "column", textDecoration: "none", color: "inherit" }}>
+    <Link href={`/noticias/${post.slug}`} className="noticia-hover" style={{ textAlign: "left", background: "#fff", border: `1px solid ${BRAND.border}`, borderRadius: 10, overflow: "hidden", display: "flex", flexDirection: "column", textDecoration: "none", color: "inherit"}}>
       <div style={{ height: 150, background: post.cover ? `url(${post.cover}) center/cover` : `linear-gradient(135deg, ${BRAND.green}, ${BRAND.greenDark})`, display: "grid", placeItems: "center" }}>
         {!post.cover && <Newspaper color="rgba(255,255,255,.5)" size={34} />}
       </div>

@@ -36,11 +36,13 @@ export default function SiteHeader() {
             <Link
               key={l.href}
               href={l.href}
+              className="nav-link" // Adicionada a classe para controlar o hover
               style={{
                 padding: "9px 16px", borderRadius: 6, textDecoration: "none",
                 fontFamily: "var(--font-league-spartan), sans-serif", fontWeight: 700, fontSize: 14, letterSpacing: ".02em",
                 background: pathname === l.href ? BRAND.yellow : "transparent",
                 color: BRAND.greenDark,
+                position: "relative" // Necessário para posicionar a linha
               }}
             >
               {l.label}
@@ -48,6 +50,7 @@ export default function SiteHeader() {
           ))}
           <Link
             href="/admin"
+            className="btn-hover"
             style={{ marginLeft: 6, padding: "9px 14px", borderRadius: 6, border: `1.5px solid ${BRAND.green}`, background: "#fff", color: BRAND.green, fontWeight: 700, fontSize: 13, textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}
           >
             <Lock size={14} /> Admin
@@ -79,6 +82,32 @@ export default function SiteHeader() {
       )}
 
       <style>{`
+        /* Configuração do pseudo-elemento para criar a linha inferior */
+        .nav-link::after {
+          content: '';
+          position: absolute;
+          bottom: 4px;
+          left: 16px;
+          right: 16px;
+          height: 2px;
+          background-color: ${BRAND.green};
+          transform: scaleX(0);
+          transform-origin: center;
+          transition: transform 0.25s ease-in-out;
+        }
+
+        /* Expande a linha ao passar o mouse */
+        .nav-link:hover::after {
+          transform: scaleX(1);
+        }
+
+        .btn-hover:hover {
+          filter: brightness(0.95); /* Escurece levemente o botão */
+          transform: translateY(-2px); /* Eleva o botão suavemente */
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Adiciona uma sombra leve */
+          transition: transform 0.25s ease-in-out;
+        }
+
         @media (min-width: 861px) { .nav-mobile { display: none; } }
         @media (max-width: 860px) {
           .nav-desktop { display: none !important; }

@@ -23,10 +23,19 @@ export default function NoticiasSection({ content, compact = false }) {
         <p style={{ color: "#5c655e" }}>Ainda não há posts publicados. Assim que a organização publicar novidades, elas aparecem aqui.</p>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }} className="posts-grid">
-          {list.map((p) => <PostCard key={p.id} post={p} />)}
+          {list.map((p) => <PostCard key={p.id} post={p} className="noticia-hover"/>)}
         </div>
       )}
       <style>{`
+        .noticia-hover {
+          transition: transform 0.25s ease-in-out;
+          display: block; /* Garante que elementos inline respondam ao transform */
+        }
+
+        .noticia-hover:hover {
+          transform: scale(1.04); /* Escala reduzida para um efeito mais elegante */
+        }
+
         @media (max-width: 900px){ .posts-grid{ grid-template-columns: repeat(2,1fr) !important; } }
         @media (max-width: 620px){ .posts-grid{ grid-template-columns: 1fr !important; } }
       `}</style>

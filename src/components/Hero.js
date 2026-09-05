@@ -16,10 +16,10 @@ export default function Hero({ content }) {
           </h1>
           <p style={{ fontSize: 17, color: "#DCEFE2", maxWidth: 560, lineHeight: 1.6 }}>{c.subtitle}</p>
           <div style={{ display: "flex", gap: 12, marginTop: 28, flexWrap: "wrap" }}>
-            <Link href="/engenharias" style={{ background: BRAND.yellow, color: BRAND.greenDark, border: "none", padding: "13px 24px", borderRadius: 6, fontWeight: 800, fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 15, textDecoration: "none" }}>
+            <Link href="/engenharias" className="btn-hover" style={{ background: BRAND.yellow, color: BRAND.greenDark, border: "none", padding: "13px 24px", borderRadius: 6, fontWeight: 800, fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 15, textDecoration: "none" }}>
               {c.ctaPrimary}
             </Link>
-            <Link href="/noticias" style={{ background: "transparent", color: "#fff", border: "1.5px solid rgba(255,255,255,.5)", padding: "13px 24px", borderRadius: 6, fontWeight: 700, fontSize: 15, textDecoration: "none" }}>
+            <Link href="/noticias" className="btn-hover" style={{ background: "transparent", color: "#fff", border: "1.5px solid rgba(255,255,255,.5)", padding: "13px 24px", borderRadius: 6, fontWeight: 700, fontSize: 15, textDecoration: "none" }}>
               {c.ctaSecondary}
             </Link>
           </div>
@@ -42,6 +42,16 @@ export default function Hero({ content }) {
         </div>
       </div>
       <style>{`@media (max-width: 860px){ .hero-grid{ grid-template-columns: 1fr !important; } }`}</style>
+      <style>{`
+          .btn-hover:hover {
+          filter: brightness(0.95); /* Escurece levemente o botão */
+          transform: translateY(-2px); /* Eleva o botão suavemente */
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Adiciona uma sombra leve */
+          transition: transform 0.25s ease-in-out;
+        }
+      `}</style>
     </section>
   );
+  
 }
+
