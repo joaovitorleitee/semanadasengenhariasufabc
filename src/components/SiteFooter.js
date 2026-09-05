@@ -16,24 +16,73 @@ export default function SiteFooter({ content }) {
             <Instagram size={18} /> <Linkedin size={18} /> <Facebook size={18} />
           </div>
         </div>
+
         <div>
-          <strong style={{ display: "block", marginBottom: 10, fontSize: 14, color: BRAND.yellow }}>Navegação</strong>
-          {[["/", "Início"], ["/evento", "O Evento"], ["/engenharias", "Engenharias"], ["/noticias", "Notícias"], ["/patrocinadores", "Patrocinadores"]].map(([href, label]) => (
-            <Link key={href} href={href} style={{ display: "block", color: "#CFE6D7", padding: "4px 0", fontSize: 14, textDecoration: "none" }}>
-              {label}
-            </Link>
-          ))}
+          <strong style={{ display: "block", marginBottom: 12, fontSize: 14, color: BRAND.yellow }}>Navegação</strong>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {[["/", "Início"], ["/evento", "O Evento"], ["/engenharias", "Engenharias"], ["/noticias", "Notícias"], ["/patrocinadores", "Patrocinadores"]].map(([href, label]) => (
+              <Link 
+                key={href} 
+                className="footer-nav-link" 
+                href={href} 
+                style={{ 
+                  color: "#CFE6D7", 
+                  fontSize: 14, 
+                  textDecoration: "none", 
+                  width: "fit-content",
+                  position: "relative", // ✅ Necessário para ancorar o ::after
+                  paddingBottom: "2px"
+                }}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
         </div>
+
         <div>
-          <strong style={{ display: "block", marginBottom: 10, fontSize: 14, color: BRAND.yellow }}>Contato</strong>
+          <strong style={{ display: "block", marginBottom: 12, fontSize: 14, color: BRAND.yellow }}>Contato</strong>
           <p style={{ color: "#CFE6D7", fontSize: 14, margin: "4px 0" }}>{c.email}</p>
           <p style={{ color: "#CFE6D7", fontSize: 14, margin: "4px 0" }}>{c.address}</p>
         </div>
       </div>
+
       <div style={{ borderTop: "1px solid rgba(255,255,255,.12)", padding: "16px 20px", textAlign: "center", fontSize: 12, color: "#9FC4AE" }}>
         © {new Date().getFullYear()} Semana das Engenharias UFABC — ufabc.edu.br
       </div>
-      <style>{`@media (max-width: 760px){ .footer-grid{ grid-template-columns: 1fr !important; } }`}</style>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+          /* Estilo da linha animada para os links do Footer */
+          .footer-nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: ${BRAND.yellow};
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.25s ease-in-out;
+          }
+
+          /* Expande a linha ao passar o mouse */
+          .footer-nav-link:hover::after {
+            transform: scaleX(1);
+          }
+
+          /* Mudança suave na cor do texto no hover */
+          .footer-nav-link:hover {
+            color: ${BRAND.yellow} !important;
+            transition: color 0.2s ease-in-out;
+          }
+
+          @media (max-width: 760px) { 
+            .footer-grid { 
+              grid-template-columns: 1fr !important; 
+            } 
+          }
+        ` }} />
     </footer>
   );
 }

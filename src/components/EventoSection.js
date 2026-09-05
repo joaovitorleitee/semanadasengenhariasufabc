@@ -5,7 +5,7 @@ import { BRAND } from "@/lib/brand";
 export default function EventoSection({ content }) {
   const c = content.evento;
   return (
-    <section style={{ maxWidth: 1180, margin: "0 auto", padding: "60px 20px" }}>
+    <section style={{ maxWidth: 1180, margin: "0 auto", padding: "60px 20px", marginBottom: 150 }}>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40 }} className="evento-grid">
         <div>
           <span style={{ color: BRAND.green, fontWeight: 800, fontSize: 13, fontFamily: "var(--font-league-spartan), sans-serif" }}>{c.eyebrow}</span>
