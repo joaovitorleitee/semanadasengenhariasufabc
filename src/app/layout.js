@@ -1,5 +1,6 @@
 import localFont from "next/font/local";
 import { League_Spartan } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 // Corpo: Metropolis (SIL OFL) — alternativa livre à Gotham pedida no manual de marca.
@@ -32,7 +33,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR" className={`${metropolis.variable} ${leagueSpartan.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
