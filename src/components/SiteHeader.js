@@ -8,6 +8,7 @@ import { BRAND } from "@/lib/brand";
 
 const LINKS = [
   { href: "/", label: "Início" },
+  { href: "/programacao", label: "Programação" },
   { href: "/evento", label: "O Evento" },
   { href: "/engenharias", label: "Engenharias" },
   { href: "/noticias", label: "Notícias" },
@@ -81,7 +82,7 @@ export default function SiteHeader() {
         </div>
       )}
 
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         /* Configuração do pseudo-elemento para criar a linha inferior */
         .nav-link::after {
           content: '';
@@ -113,7 +114,7 @@ export default function SiteHeader() {
           .nav-desktop { display: none !important; }
           .nav-toggle { display: block !important; }
         }
-      `}</style>
+      `}} />
     </header>
   );
 }

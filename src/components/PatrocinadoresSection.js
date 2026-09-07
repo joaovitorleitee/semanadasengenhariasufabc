@@ -80,7 +80,7 @@ function SponsorCard({ sponsor }) {
           {/* Container animado utilizando CSS Grid Rows */}
           <div className={`sponsor-desc-wrapper ${expanded ? "is-expanded" : ""}`}>
             <div style={{ overflow: "hidden" }}>
-              <p style={{ color: "#5c655e", fontSize: 12.5, margin: "6px 0 0", lineHeight: 1.5, textAlign: "center" }}>
+              <p style={{ color: "#5c655e", fontSize: 12.5, margin: "6px 0 0", lineHeight: 1.5, textAlign: "justify" }}>
                 {sponsor.description}
               </p>
             </div>

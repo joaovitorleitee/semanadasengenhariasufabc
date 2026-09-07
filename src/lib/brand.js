@@ -13,6 +13,19 @@ export const BRAND = {
 export const CATEGORIES = ["Comunicado", "Palestra", "Minicurso", "Patrocínio", "Ação Social", "Geral"];
 export const SPONSOR_TIERS = ["Diamante", "Ouro", "Prata", "Bronze", "Apoio", "Cobre"];
 
+// Categorias usadas na Programação (agenda de palestras/minicursos/eventos).
+export const EVENT_CATEGORIES = ["Palestra", "Minicurso", "Workshop", "Mesa-redonda", "Visita técnica", "Outro"];
+
+// Cor de cada categoria de evento, usada nos selos da agenda.
+export const EVENT_CATEGORY_COLORS = {
+  "Palestra": { bg: "#E7F5EC", fg: "#00593B", border: "#BFE3CC" },
+  "Minicurso": { bg: "#FFF7D6", fg: "#7A6400", border: "#F0E1A0" },
+  "Workshop": { bg: "#E7F0FF", fg: "#1D4C9B", border: "#C3D8FA" },
+  "Mesa-redonda": { bg: "#F3E8FF", fg: "#6B21A8", border: "#E1C9FB" },
+  "Visita técnica": { bg: "#FFE9DC", fg: "#9A4A11", border: "#F6CBAA" },
+  "Outro": { bg: "#F1F1F1", fg: "#555", border: "#DADADA" },
+};
+
 // Usado apenas como fallback enquanto os dados carregam do Supabase ou caso
 // uma seção ainda não exista na tabela site_content.
 export const DEFAULT_CONTENT = {
@@ -118,6 +131,32 @@ export function fmtDate(iso) {
   } catch {
     return "";
   }
+}
+
+// Formata "14:30:00" (como vem do Postgres) para "14:30".
+export function fmtTime(t) {
+  if (!t) return "";
+  return t.slice(0, 5);
+}
+
+// "2026-09-23" -> "qua, 23 set". Usado nos cards da Programação.
+export function fmtDateShort(iso) {
+  if (!iso) return "";
+  try {
+    const d = new Date(`${iso}T00:00:00`);
+    return d.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "short" });
+  } catch {
+    return "";
+  }
+}
+
+// Mostra "23 set" ou, se o evento passa de um dia, "23–25 set".
+export function fmtDateRange(inicio, fim) {
+  if (!inicio) return "";
+  const a = fmtDateShort(inicio);
+  if (!fim || fim === inicio) return a;
+  const b = fmtDateShort(fim);
+  return `${a} – ${b}`;
 }
 
 export function slugify(text) {

@@ -8,6 +8,7 @@ import PostsManager from "./PostsManager";
 import SectionEditor from "./SectionEditor";
 import CourseForm from "./CourseForm";
 import SponsorsManager from "./SponsorsManager";
+import EventsManager from "./EventsManager";
 import { iconBtn } from "./adminStyles";
 
 function EngenhariasEditor({ contentStore, notify }) {
@@ -53,6 +54,7 @@ export default function AdminArea({ onLogout, notify }) {
   const [tab, setTab] = useState("posts");
   const contentStore = useSiteContent();
   const tabs = [
+    { id: "programacao", label: "Programação" },
     { id: "posts", label: "Notícias" },
     { id: "patrocinadores", label: "Patrocinadores" },
     { id: "home", label: "Início" },
@@ -84,6 +86,10 @@ export default function AdminArea({ onLogout, notify }) {
       </div>
 
       {contentStore.error && <p style={{ color: "#B3261E", marginBottom: 16 }}>{contentStore.error}</p>}
+
+      {tab === "programacao" && (
+        <EventsManager engenharias={contentStore.content.engenharias} notify={notify} />
+      )}
 
       {tab === "posts" && (
         <>
