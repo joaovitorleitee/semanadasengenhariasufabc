@@ -5,6 +5,7 @@ import { supabase } from "./supabaseClient";
 import { DEFAULT_CONTENT, deepMergeDefaults } from "./brand";
 
 export function useSiteContent() {
+  
   const [content, setContent] = useState(DEFAULT_CONTENT);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -20,6 +21,7 @@ export function useSiteContent() {
     const saved = {};
     (data || []).forEach((row) => { saved[row.section] = row.data; });
     setContent(deepMergeDefaults(DEFAULT_CONTENT, saved));
+
     setLoading(false);
   }, []);
 

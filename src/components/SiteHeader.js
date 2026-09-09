@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Lock } from "lucide-react";
 import { BRAND } from "@/lib/brand";
+import Image from "next/image";
 
 const LINKS = [
   { href: "/", label: "Início" },
@@ -23,9 +24,14 @@ export default function SiteHeader() {
     <header style={{ background: "#fff", borderBottom: `4px solid ${BRAND.green}`, position: "sticky", top: 0, zIndex: 50 }}>
       <div style={{ maxWidth: 1180, margin: "0 auto", padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20 }}>
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none" }}>
-          <div style={{ width: 46, height: 46, borderRadius: 8, background: BRAND.green, border: `2px solid ${BRAND.yellow}`, display: "grid", placeItems: "center", color: BRAND.yellow, fontFamily: "var(--font-league-spartan), sans-serif", fontWeight: 800, fontSize: 22 }}>
-            U
-          </div>
+          <Image 
+    src="/icones/logo.png" 
+    alt="Logo Semana das Engenharias"
+    width={46}
+    height={46}
+    style={{ borderRadius: 8, objectFit: "contain" }}
+    priority
+  />
           <div style={{ textAlign: "left", lineHeight: 1.15 }}>
             <strong style={{ display: "block", color: BRAND.greenDark, fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 15, letterSpacing: ".02em" }}>SEMANA DAS ENGENHARIAS</strong>
             <span style={{ color: "#5c655e", fontSize: 12 }}>UFABC · 2026</span>

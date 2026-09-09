@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Instagram, Linkedin, Facebook } from "lucide-react";
 import { BRAND } from "@/lib/brand";
+import { DEFAULT_CONTENT } from "@/lib/brand";
 
 export default function SiteFooter({ content }) {
   const c = content.footer;
@@ -13,7 +14,22 @@ export default function SiteFooter({ content }) {
           <strong style={{ fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 18, letterSpacing: ".02em" }}>{c.title}</strong>
           <p style={{ color: "#CFE6D7", fontSize: 14, marginTop: 10, maxWidth: 360 }}>{c.description}</p>
           <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
-            <Instagram size={18} /> <Linkedin size={18} /> <Facebook size={18} />
+            <Link 
+    href="https://www.instagram.com/seufabc?utm_source=ig_web_button_share_sheet&stkn=ZDNlZDc0MzIxNw=="
+    target="_blank" 
+    rel="noopener noreferrer"
+    style={{ color: "inherit", display: "inline-flex", alignItems: "center" }}
+  >
+    <Instagram size={18} />
+  </Link> <Link 
+    href="https://www.linkedin.com/in/semana-das-engenharias-ufabc"
+    target="_blank" 
+    rel="noopener noreferrer"
+    style={{ color: "inherit", display: "inline-flex", alignItems: "center" }}
+  >
+    <Linkedin size={18} /> </Link>
+
+   
           </div>
         </div>
 
@@ -43,7 +59,7 @@ export default function SiteFooter({ content }) {
         <div>
           <strong style={{ display: "block", marginBottom: 12, fontSize: 14, color: BRAND.yellow }}>Contato</strong>
           <p style={{ color: "#CFE6D7", fontSize: 14, margin: "4px 0" }}>{c.email}</p>
-          <p style={{ color: "#CFE6D7", fontSize: 14, margin: "4px 0" }}>{c.address}</p>
+          <p style={{ color: "#CFE6D7", fontSize: 14, margin: "4px 0" }}>Campus Santo André</p>
         </div>
       </div>
 

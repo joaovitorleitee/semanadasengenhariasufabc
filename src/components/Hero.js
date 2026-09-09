@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Calendar, MapPin } from "lucide-react";
 import { BRAND } from "@/lib/brand";
+import { DEFAULT_CONTENT } from "@/lib/brand";
 
 export default function Hero({ content }) {
   const c = content.hero;

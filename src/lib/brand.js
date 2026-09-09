@@ -37,7 +37,7 @@ export const DEFAULT_CONTENT = {
     ctaPrimary: "Conheça as engenharias",
     ctaSecondary: "Ver notícias",
     date: "Dia 21 a 25 de setembro de 2026",
-    local: "Campus somente de Santo André",
+    local: "Campus Santo André",
   },
   evento: {
     eyebrow: "O EVENTO",
@@ -64,7 +64,7 @@ export const DEFAULT_CONTENT = {
     description:
       "Evento acadêmico e extensionista que conecta estudantes, pesquisadores, profissionais e empresas nas oito engenharias da UFABC.",
     email: "seufabc@ufabc.edu.br",
-    address: "Campus Santo André e São Bernardo do Campo",
+    address: "Campus Santo André",
   },
   engenharias: [
     {
