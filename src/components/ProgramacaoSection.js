@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { CalendarDays, Clock, MapPin, User, Layers, Users, ExternalLink } from "lucide-react";
-import { BRAND, EVENT_CATEGORY_COLORS, fmtTime, fmtDateRange } from "@/lib/brand";
+import { BRAND, EVENT_CATEGORY_COLORS, EVENT_LEVELS, fmtTime, fmtDateRange } from "@/lib/brand";
 import { useEventos } from "@/lib/useEventos";
 import { useSponsors } from "@/lib/useSponsors";
 
@@ -99,6 +99,7 @@ export default function ProgramacaoSection({ content }) {
   const { eventos, error } = useEventos({ onlyPublished: true });
   const { sponsors } = useSponsors({ onlyActive: true });
   const [tab, setTab] = useState("todos"); // 'todos' | 'geral' | engenharia_n
+  const [filtroNivel, setFiltroNivel] = useState("todos"); // 'todos' | 'Graduação' | 'Pós-Graduação' | 'Geral'
 
   const sponsorById = useMemo(() => {
     const map = {};
@@ -117,20 +118,42 @@ export default function ProgramacaoSection({ content }) {
 
   const filtrados = useMemo(() => {
     if (!eventos) return [];
-    let list = eventos;
-    if (tab === "geral") list = list.filter((e) => !e.engenharia_n);
-    else if (tab !== "todos") list = list.filter((e) => e.engenharia_n === tab);
-    return list;
-  }, [eventos, tab]);
+    
+    return eventos.filter((e) => {
+      // 1. Filtro por Engenharia
+      let bateEngenharia = true;
+      if (tab === "geral") {
+        bateEngenharia = !e.engenharia_n;
+      } else if (tab !== "todos") {
+        const engObj = engenharias.find((eng) => String(eng.n) === String(tab));
+        const val = e.engenharia_n ? String(e.engenharia_n).trim() : "";
+        bateEngenharia = val === String(tab) || (engObj && val === engObj.nome);
+      }
+
+      // 2. Filtro por Nível (trata fallback por texto no título/categoria/descrição)
+      const textoCompleto = `${e.titulo || ""} ${e.categoria || ""} ${e.descricao || ""}`.toLowerCase();
+      const ehPos = textoCompleto.includes("pós") || textoCompleto.includes("pos");
+      const nivelDoEvento = e.nivel ? e.nivel : (ehPos ? "Pós-Graduação" : "Graduação");
+
+      const bateNivel = filtroNivel === "todos" || nivelDoEvento === filtroNivel;
+
+      return bateEngenharia && bateNivel;
+    });
+  }, [eventos, tab, filtroNivel, engenharias]);
 
   const contagemPorTab = useMemo(() => {
     const map = {};
     (eventos || []).forEach((e) => {
-      const key = e.engenharia_n || "geral";
+      const key = e.engenharia_n ? String(e.engenharia_n).trim() : "geral";
       map[key] = (map[key] || 0) + 1;
     });
     return map;
   }, [eventos]);
+
+  const niveisTabs = [
+    { id: "todos", label: "Todos os níveis" },
+    ...EVENT_LEVELS.map((n) => ({ id: n, label: n }))
+  ];
 
   return (
     <section style={{ maxWidth: 1180, margin: "0 auto", padding: "20px 20px 80px" }}>
@@ -142,7 +165,8 @@ export default function ProgramacaoSection({ content }) {
         Escolha uma engenharia para ver só a programação dela, ou veja tudo em um só lugar.
       </p>
 
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 30 }} className="prog-tabs">
+      {/* Abas por Engenharia */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }} className="prog-tabs">
         {tabs.map((t) => {
           const active = tab === t.id;
           const count = t.id === "todos" ? (eventos || []).length : contagemPorTab[t.id === "geral" ? "geral" : t.n] || 0;
@@ -170,6 +194,28 @@ export default function ProgramacaoSection({ content }) {
               )}
               {t.label}
               <span style={{ opacity: 0.75, fontWeight: 600 }}>({count})</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Abas por Nível */}
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 30 }}>
+        {niveisTabs.map((t) => {
+          const active = filtroNivel === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setFiltroNivel(t.id)}
+              style={{
+                padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                border: `1.5px solid ${active ? BRAND.green : BRAND.border}`,
+                background: active ? BRAND.green : "#fff",
+                color: active ? "#fff" : "#5c655e",
+                fontWeight: 700, fontSize: 12.5, fontFamily: "var(--font-league-spartan), sans-serif",
+              }}
+            >
+              {t.label}
             </button>
           );
         })}

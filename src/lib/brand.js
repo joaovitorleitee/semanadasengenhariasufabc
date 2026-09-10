@@ -15,6 +15,7 @@ export const SPONSOR_TIERS = ["Diamante", "Ouro", "Prata", "Bronze", "Apoio", "C
 
 // Categorias usadas na Programação (agenda de palestras/minicursos/eventos).
 export const EVENT_CATEGORIES = ["Palestra", "Minicurso", "Workshop", "Mesa-redonda", "Visita técnica", "Outro"];
+export const EVENT_LEVELS = ["Graduação", "Pós-Graduação", "Geral"];
 
 // Cor de cada categoria de evento, usada nos selos da agenda.
 export const EVENT_CATEGORY_COLORS = {

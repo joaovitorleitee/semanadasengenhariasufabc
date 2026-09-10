@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { Save, Loader2 } from "lucide-react";
-import { BRAND, EVENT_CATEGORIES } from "@/lib/brand";
+import { BRAND, EVENT_CATEGORIES, EVENT_LEVELS } from "@/lib/brand";
 import { fieldInput, fieldLabel } from "./adminStyles";
 
 const emptyForm = {
   titulo: "",
-  categoria: EVENT_CATEGORIES[0],
+  categoria: EVENT_CATEGORIES[0] || "Palestra",
+  nivel: EVENT_LEVELS[0] || "Graduação",
   engenharia_n: "",
   palestrante: "",
   patrocinador_id: "",
@@ -23,9 +24,7 @@ const emptyForm = {
   status: "draft",
 };
 
-// engenharias: lista vinda de content.engenharias (cada item tem n e nome)
-// sponsors: lista vinda de useSponsors (para o campo "empresa vinculada")
-export default function EventForm({ initial, engenharias, sponsors, onCancel, onSave, saving }) {
+export default function EventForm({ initial, engenharias = [], sponsors = [], onCancel, onSave, saving }) {
   const [form, setForm] = useState(
     initial
       ? {
@@ -39,18 +38,26 @@ export default function EventForm({ initial, engenharias, sponsors, onCancel, on
         }
       : emptyForm
   );
+
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const valid = form.titulo.trim() && form.data_inicio && form.horario_inicio && form.horario_fim;
 
-  const submit = () => {
+   const submit = () => {
+    const { nivel, ...dadosEventos } = form;
+    let categoriaAjustada = form.categoria;
+  if (nivel === "Pós-Graduação" && !categoriaAjustada.includes("Pós-Graduação")) {
+    categoriaAjustada = `${form.categoria} (Pós-Graduação)`;
+  }
     onSave({
-      ...form,
-      // vazio => null (evento geral / sem empresa / sem limite de vagas / mesmo dia)
-      engenharia_n: form.engenharia_n || null,
-      patrocinador_id: form.patrocinador_id || null,
-      data_fim: form.data_fim || form.data_inicio || null,
-      vagas: form.vagas === "" ? null : Number(form.vagas),
-      link_inscricao: form.link_inscricao.trim() || null,
+      ...dadosEventos,
+    engenharia_n: form.engenharia_n || null,
+    patrocinador_id: form.patrocinador_id || null,
+    data_fim: form.data_fim || form.data_inicio || null,
+    vagas: form.vagas === "" || form.vagas === null ? null : Number(form.vagas),
+    link_inscricao: form.link_inscricao?.trim() || null,
+    imagem_url: form.imagem_url?.trim() || null,
+    palestrante: form.palestrante?.trim() || null,
+    local: form.local?.trim() || null,
     });
   };
 
@@ -71,23 +78,37 @@ export default function EventForm({ initial, engenharias, sponsors, onCancel, on
           <textarea value={form.descricao} onChange={(e) => set("descricao", e.target.value)} style={{ ...fieldInput, resize: "vertical", minHeight: 80 }} placeholder="Resumo da atividade, proposta, pré-requisitos..." />
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="form-row">
-          <div>
-            <label style={fieldLabel}>Categoria</label>
-            <select value={form.categoria} onChange={(e) => set("categoria", e.target.value)} style={fieldInput}>
-              {EVENT_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </div>
-          <div>
-            <label style={fieldLabel}>Engenharia</label>
-            <select value={form.engenharia_n} onChange={(e) => set("engenharia_n", e.target.value)} style={fieldInput}>
-              <option value="">Geral (não vinculado a um curso específico)</option>
-              {engenharias.map((eng) => (
-                <option key={eng.n} value={eng.n}>{eng.n} — {eng.nome}</option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }} className="form-row">
+  <div>
+    <label style={fieldLabel}>Categoria</label>
+    <select value={form.categoria} onChange={(e) => set("categoria", e.target.value)} style={fieldInput}>
+      <option value="Palestra">Palestra</option>
+      <option value="Minicurso">Minicurso</option>
+      <option value="Mesa Redonda">Mesa Redonda</option>
+      <option value="Workshop">Workshop</option>
+      <option value="Geral">Geral</option>
+    </select>
+  </div>
+
+  <div>
+    <label style={fieldLabel}>Nível / Público</label>
+    <select value={form.nivel || "Graduação"} onChange={(e) => set("nivel", e.target.value)} style={fieldInput}>
+      <option value="Graduação">Graduação</option>
+      <option value="Pós-Graduação">Pós-Graduação</option>
+      <option value="Geral">Geral (Todos)</option>
+    </select>
+  </div>
+
+  <div>
+    <label style={fieldLabel}>Engenharia</label>
+    <select value={form.engenharia_n} onChange={(e) => set("engenharia_n", e.target.value)} style={fieldInput}>
+      <option value="">Geral (não vinculado a um curso específico)</option>
+      {engenharias.map((eng) => (
+        <option key={eng.n} value={eng.n}>{eng.n} — {eng.nome}</option>
+      ))}
+    </select>
+  </div>
+</div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="form-row">
           <div>

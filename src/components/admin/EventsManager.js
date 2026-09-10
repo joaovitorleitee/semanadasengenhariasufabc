@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Plus, Pencil, Trash2, Eye, EyeOff, CalendarDays } from "lucide-react";
-import { BRAND, fmtTime, fmtDateRange } from "@/lib/brand";
+import { BRAND, fmtTime, fmtDateRange, EVENT_LEVELS } from "@/lib/brand";
 import { useEventos } from "@/lib/useEventos";
 import { useSponsors } from "@/lib/useSponsors";
 import StatusPill from "../StatusPill";
@@ -16,16 +16,35 @@ export default function EventsManager({ engenharias, notify }) {
   const [saving, setSaving] = useState(false);
   const [confirmId, setConfirmId] = useState(null);
   const [filtro, setFiltro] = useState("todos"); // 'todos' | engenharia_n | 'geral'
+  const [filtroNivel, setFiltroNivel] = useState("todos");
 
   const nomeCurso = (n) => engenharias.find((e) => e.n === n)?.nome || n;
   const nomeSponsor = (id) => (sponsors || []).find((s) => s.id === id)?.name;
-
+ 
+ 
   const filtrados = useMemo(() => {
     if (!eventos) return [];
-    if (filtro === "todos") return eventos;
-    if (filtro === "geral") return eventos.filter((e) => !e.engenharia_n);
-    return eventos.filter((e) => e.engenharia_n === filtro);
-  }, [eventos, filtro]);
+
+    return eventos.filter((evento) => {
+      // 1. Valida Engenharia
+      const bateEngenharia =
+        filtro === "todos" ? true :
+        filtro === "geral" ? !evento.engenharia_n :
+        String(evento.engenharia_n) === String(filtro);
+
+      // 2. Busca pelas palavras 'pós', 'pos' ou 'pós-graduação' no título, categoria ou descrição
+      const textoCompleto = `${evento.titulo || ''} ${evento.categoria || ''} ${evento.descricao || ''}`.toLowerCase();
+      
+      const ehPos = textoCompleto.includes("pós") || textoCompleto.includes("pos");
+
+      const nivelDoEvento = evento.nivel ? evento.nivel : (ehPos ? "Pós-Graduação" : "Graduação");
+
+      const bateNivel =
+        filtroNivel === "todos" || nivelDoEvento === filtroNivel;
+
+      return bateEngenharia && bateNivel;
+    });
+  }, [eventos, filtro, filtroNivel]);
 
   const handleSave = async (form) => {
     setSaving(true);
@@ -95,6 +114,20 @@ export default function EventsManager({ engenharias, notify }) {
           </button>
         ))}
       </div>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
+  {[{ id: "todos", label: "Todos os níveis" }, ...EVENT_LEVELS.map((n) => ({ id: n, label: n }))].map((t) => (
+    <button
+      key={t.id} onClick={() => setFiltroNivel(t.id)}
+      style={{
+        padding: "7px 13px", borderRadius: 999, border: `1.5px solid ${filtroNivel === t.id ? BRAND.green : BRAND.border}`,
+        background: filtroNivel === t.id ? BRAND.green : "#fff", color: filtroNivel === t.id ? "#fff" : "#5c655e",
+        fontWeight: 700, fontSize: 12.5, cursor: "pointer",
+      }}
+    >
+      {t.label}
+    </button>
+  ))}
+</div> 
 
       {eventos === null ? (
         <p style={{ color: "#5c655e" }}>Carregando…</p>
@@ -118,6 +151,7 @@ export default function EventsManager({ engenharias, notify }) {
                 </div>
                 <span style={{ fontSize: 12.5, color: "#8a938c" }}>
                   {ev.categoria}
+                  {ev.nivel ? ` · ${ev.nivel}` : ""}
                   {ev.engenharia_n ? ` · ${nomeCurso(ev.engenharia_n)}` : " · Geral"}
                   {ev.data_inicio ? ` · ${fmtDateRange(ev.data_inicio, ev.data_fim)}` : ""}
                   {ev.horario_inicio ? ` às ${fmtTime(ev.horario_inicio)}` : ""}
@@ -139,6 +173,7 @@ export default function EventsManager({ engenharias, notify }) {
                 ) : (
                   <button onClick={() => setConfirmId(ev.id)} title="Excluir" style={{ ...iconBtn, color: "#B3261E" }}><Trash2 size={16} /></button>
                 )}
+                
               </div>
             </div>
           ))}
