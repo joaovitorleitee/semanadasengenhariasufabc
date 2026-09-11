@@ -120,7 +120,6 @@ export default function ProgramacaoSection({ content }) {
     if (!eventos) return [];
     
     return eventos.filter((e) => {
-      // 1. Filtro por Engenharia
       let bateEngenharia = true;
       if (tab === "geral") {
         bateEngenharia = !e.engenharia_n;
@@ -130,11 +129,8 @@ export default function ProgramacaoSection({ content }) {
         bateEngenharia = val === String(tab) || (engObj && val === engObj.nome);
       }
 
-      // 2. Filtro por Nível (trata fallback por texto no título/categoria/descrição)
-      const textoCompleto = `${e.titulo || ""} ${e.categoria || ""} ${e.descricao || ""}`.toLowerCase();
-      const ehPos = textoCompleto.includes("pós") || textoCompleto.includes("pos");
-      const nivelDoEvento = e.nivel ? e.nivel : (ehPos ? "Pós-Graduação" : "Graduação");
-
+      // Leitura nativa da coluna 'nivel'
+      const nivelDoEvento = e.nivel || "Graduação";
       const bateNivel = filtroNivel === "todos" || nivelDoEvento === filtroNivel;
 
       return bateEngenharia && bateNivel;
