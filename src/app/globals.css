@@ -1,28 +1,177 @@
+/* ============================================================================
+   globals.css — Estilos globais + sistema de tema claro/escuro
+   ============================================================================
+   Este arquivo é importado uma única vez em src/app/layout.js e vale para o
+   site inteiro. Ele define:
+     1) Um "reset" básico (box-sizing, margens zeradas).
+     2) Duas paletas de cores, como CSS variables (custom properties):
+          - ":root"                → tema claro (padrão)
+          - "[data-theme='dark']"  → tema escuro
+        A troca entre elas acontece quando o atributo data-theme do <html>
+        muda entre "light" e "dark" — isso é feito pelo componente
+        ThemeProvider.js, em JavaScript. O CSS não precisa saber COMO a troca
+        acontece, só reagir a ela.
+     3) Estilos base do <body>, links, botões e a animação de "carregando".
+     4) O estilo do botão de alternância de tema (.theme-toggle).
+   ============================================================================ */
+
+/* Reset simples: garante que padding/border entrem no cálculo da largura
+   dos elementos (evita caixas "maiores" que o esperado). */
 * {
   box-sizing: border-box;
 }
 
+/* Remove margem/padding padrão do navegador e garante que a página ocupe
+   100% da altura da tela (necessário para o rodapé "colar" embaixo). */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
 }
 
-body {
-  font-family: var(--font-metropolis), "Segoe UI", sans-serif;
-  color: #202020;
-  background: #fff;
-  line-height: 1.5;
+/* ============================================================================
+   TEMA CLARO (padrão) — valores usados quando data-theme NÃO é "dark"
+   ============================================================================ */
+:root {
+  color-scheme: light; /* Avisa o navegador que o tema é claro (ajusta scrollbars, inputs nativos etc.) */
+
+  /* --- Fundos e superfícies ------------------------------------------------ */
+  --bg: #F6F8F6;          /* Fundo geral da página */
+  --surface: #FFFFFF;     /* Fundo de cartões, cabeçalho, superfícies "elevadas" */
+  --surface-alt: #FAFBFA; /* Fundo alternativo, mais sutil (ex: painel expandido) */
+  --logo-chip: #FFFFFF;   /* Fundo fixo (sempre branco) atrás de logos de patrocinadores,
+                              para que logos com fundo transparente continuem visíveis
+                              mesmo no tema escuro */
+
+  /* --- Textos (do mais forte ao mais sutil) -------------------------------- */
+  --text: #202020;         /* Texto principal do corpo */
+  --text-muted: #5c655e;   /* Texto secundário (legendas, datas) */
+  --text-faint: #8a938c;   /* Texto terciário, bem discreto */
+  --text-soft: #3d443f;    /* Texto de parágrafos longos */
+  --text-softer: #4a544d;  /* Variante próxima de text-soft */
+
+  /* --- Bordas --------------------------------------------------------------- */
+  --border: #DDE6E0;      /* Borda padrão de cards e divisórias */
+  --border-soft: #DADADA; /* Borda mais suave, usada em estados neutros */
+
+  /* --- Estados (erro, destaque de navegação) -------------------------------- */
+  --error-bg: #F1F1F1;
+  --error: #B3261E;
+  --error-border: #DADADA;
+  --nav-active-bg: #FBF6DC; /* Fundo do link ativo no menu mobile */
+
+  /* --- Cores de marca (verde e amarelo) -------------------------------------
+     Ficam FIXAS — não são redefinidas dentro de [data-theme="dark"] — porque
+     são usadas em fundos sólidos, botões e emblemas, onde o usuário pediu
+     para preservar a identidade visual sem suavizar. */
+  --brand-green: #00593B;
+  --brand-green-dark: #013D28;
+  --brand-green-accent: #009B01;
+  --brand-yellow: #FFD300;
+
+  /* --- Tokens adaptativos para TEXTO em verde -------------------------------
+     Usados quando o verde aparece como cor de texto/ícone (não como fundo).
+     No tema claro, apontam para o próprio verde da marca; no tema escuro
+     (mais abaixo), viram tons mais claros/suaves para continuar legíveis
+     sem parecer neon. */
+  --heading: var(--brand-green-dark);  /* Verde usado em títulos */
+  --accent-text: var(--brand-green);   /* Verde usado em rótulos, links, ícones */
+
+  /* --- Cores dos selos de categoria de evento (Programação) -----------------
+     Cada categoria tem fundo (bg), texto (fg) e borda (border). No tema
+     claro são tons pastel bem claros. */
+  --cat-palestra-bg: #E7F5EC;      --cat-palestra-fg: #00593B;      --cat-palestra-border: #BFE3CC;
+  --cat-minicurso-bg: #FFF7D6;     --cat-minicurso-fg: #7A6400;     --cat-minicurso-border: #F0E1A0;
+  --cat-workshop-bg: #E7F0FF;      --cat-workshop-fg: #1D4C9B;      --cat-workshop-border: #C3D8FA;
+  --cat-mesa-bg: #F3E8FF;          --cat-mesa-fg: #6B21A8;          --cat-mesa-border: #E1C9FB;
+  --cat-visita-bg: #FFE9DC;        --cat-visita-fg: #9A4A11;        --cat-visita-border: #F6CBAA;
+  --cat-outro-bg: #F1F1F1;         --cat-outro-fg: #555555;         --cat-outro-border: #DADADA;
 }
 
+/* ============================================================================
+   TEMA ESCURO — sobrescreve as variáveis acima quando o <html> tem o
+   atributo data-theme="dark" (definido via JS pelo ThemeProvider).
+   Repare que --brand-green, --brand-green-dark, --brand-green-accent e
+   --brand-yellow NÃO aparecem aqui de propósito: continuam iguais ao tema
+   claro nos fundos/botões/emblemas, conforme pedido.
+   ============================================================================ */
+[data-theme="dark"] {
+  color-scheme: dark; /* Avisa o navegador que o tema é escuro */
+
+  /* --- Fundos e superfícies (agora escuros) --------------------------------- */
+  --bg: #14181A;
+  --surface: #1B211D;
+  --surface-alt: #212823;
+  --logo-chip: #FFFFFF; /* Continua branco de propósito — ver explicação no tema claro */
+
+  /* --- Textos (agora claros, para contrastar com o fundo escuro) ------------ */
+  --text: #E9ECEA;
+  --text-muted: #A7B2AB;
+  --text-faint: #8F9A93;
+  --text-soft: #C6CFC9;
+  --text-softer: #B7C1BB;
+
+  /* --- Bordas mais discretas sobre fundo escuro ------------------------------ */
+  --border: #2B332E;
+  --border-soft: #333D36;
+
+  /* --- Estados adaptados ao fundo escuro -------------------------------------
+     O vermelho de erro fica mais claro/suave (em vez do tom escuro original),
+     para não ficar ilegível sobre fundo escuro nem parecer neon. */
+  --error-bg: #35201F;
+  --error: #E5867B;
+  --error-border: #4A2C2A;
+  --nav-active-bg: #3A3318;
+
+  /* --- Tokens adaptativos para TEXTO em verde --------------------------------
+     Aqui SIM mudam: tons mais claros e suaves de verde, legíveis sobre fundo
+     escuro, mas sem serem neon — diferente do --brand-green fixo (usado em
+     fundos), que continua o mesmo. */
+  --heading: #E8F1EA;
+  --accent-text: #7FC79B;
+
+  /* --- Selos de categoria de evento, versão escura ---------------------------
+     Fundos escurecidos (em vez de pastel claro) e texto claro, mantendo a
+     mesma identidade de cor de cada categoria. */
+  --cat-palestra-bg: #16301F;      --cat-palestra-fg: #8FDBAB;      --cat-palestra-border: #2C5A3B;
+  --cat-minicurso-bg: #332B0F;     --cat-minicurso-fg: #E3C766;     --cat-minicurso-border: #59491A;
+  --cat-workshop-bg: #16263B;      --cat-workshop-fg: #8FB6EF;      --cat-workshop-border: #2A4468;
+  --cat-mesa-bg: #2A2038;          --cat-mesa-fg: #C9A6EE;          --cat-mesa-border: #4A3A63;
+  --cat-visita-bg: #362316;        --cat-visita-fg: #EFAD82;        --cat-visita-border: #5C3C24;
+  --cat-outro-bg: #262626;         --cat-outro-fg: #B8B8B8;         --cat-outro-border: #3A3A3A;
+}
+
+/* Garante que o fundo do <html> (fora do <body>) também acompanhe o tema —
+   evita uma "borda" clara aparecer em navegadores que fazem scroll elástico. */
+html {
+  background: var(--bg);
+}
+
+/* Estilo base do corpo do site: fonte, cor de texto e fundo vêm das
+   variáveis definidas acima (portanto já respeitam o tema atual). A
+   transição suaviza a troca de cor ao alternar entre claro e escuro. */
+body {
+  font-family: var(--font-metropolis), "Segoe UI", sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.5;
+  transition: background-color .2s ease, color .2s ease;
+}
+
+/* Links não ganham a cor azul padrão do navegador — herdam a cor do
+   elemento pai, para os componentes controlarem a cor manualmente. */
 a {
   color: inherit;
 }
 
+/* Botões usam a mesma fonte do restante do site (por padrão, o navegador
+   usa uma fonte de sistema diferente em botões). */
 button {
   font-family: inherit;
 }
 
+/* Classe usada em ícones de "carregando" (ex: <Loader2 className="spin" />):
+   gira o elemento infinitamente. */
 .spin {
   animation: spin 1s linear infinite;
 }
@@ -31,4 +180,29 @@ button {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* ============================================================================
+   Botão de alternância de tema (sol/lua) — usado pelo componente
+   ThemeToggle.js. Fica com fundo/borda adaptados ao tema atual.
+   ============================================================================ */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--heading);
+  cursor: pointer;
+  transition: background-color .2s ease, border-color .2s ease, transform .15s ease;
+}
+
+/* Pequeno efeito ao passar o mouse: levanta o botão e destaca a borda em
+   verde, dando feedback visual de que é clicável. */
+.theme-toggle:hover {
+  transform: translateY(-1px);
+  border-color: var(--brand-green);
 }

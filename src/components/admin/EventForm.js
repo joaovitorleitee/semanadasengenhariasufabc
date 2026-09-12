@@ -42,42 +42,24 @@ export default function EventForm({ initial, engenharias = [], sponsors = [], on
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const valid = form.titulo.trim() && form.data_inicio && form.horario_inicio && form.horario_fim;
 
-   const submit = (e) => {
-  if (e && e.preventDefault) e.preventDefault();
-
-  // Função para limpar strings vazias
-  const clean = (val) => (val && String(val).trim() !== "" ? val : null);
-
-  // Função específica para campos numéricos (como vagas)
-  const cleanInt = (val) => {
-    if (val === null || val === undefined || String(val).trim() === "") return null;
-    const parsed = parseInt(val, 10);
-    return isNaN(parsed) ? null : parsed;
+   const submit = () => {
+    const { nivel, ...dadosEventos } = form;
+    let categoriaAjustada = form.categoria;
+  if (nivel === "Pós-Graduação" && !categoriaAjustada.includes("Pós-Graduação")) {
+    categoriaAjustada = `${form.categoria} (Pós-Graduação)`;
+  }
+    onSave({
+      ...dadosEventos,
+    engenharia_n: form.engenharia_n || null,
+    patrocinador_id: form.patrocinador_id || null,
+    data_fim: form.data_fim || form.data_inicio || null,
+    vagas: form.vagas === "" || form.vagas === null ? null : Number(form.vagas),
+    link_inscricao: form.link_inscricao?.trim() || null,
+    imagem_url: form.imagem_url?.trim() || null,
+    palestrante: form.palestrante?.trim() || null,
+    local: form.local?.trim() || null,
+    });
   };
-
-  const payload = {
-    ...form,
-    // Trata números (evita enviar "")
-    vagas: cleanInt(form.vagas),
-    engenharia_n: cleanInt(form.engenharia_n),
-
-    // Trata datas e horários
-    data_inicio: clean(form.data_inicio),
-    data_fim: clean(form.data_fim),
-    horario_inicio: clean(form.horario_inicio),
-    horario_fim: clean(form.horario_fim),
-
-    // Trata outros campos opcionais
-    patrocinador_id: clean(form.patrocinador_id),
-    link_inscricao: clean(form.link_inscricao),
-    imagem_url: clean(form.imagem_url),
-
-    // Nível do evento
-    nivel: form.nivel || "Graduação",
-  };
-
-  onSave(payload);
-};
 
   return (
     <div style={{ background: "#fff", border: `1px solid ${BRAND.border}`, borderRadius: 10, padding: 26 }}>

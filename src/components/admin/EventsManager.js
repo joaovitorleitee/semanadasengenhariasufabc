@@ -32,9 +32,15 @@ export default function EventsManager({ engenharias, notify }) {
         filtro === "geral" ? !evento.engenharia_n :
         String(evento.engenharia_n) === String(filtro);
 
-      // 2. Valida Nível diretamente do banco
-      const nivelDoEvento = evento.nivel || "Graduação";
-      const bateNivel = filtroNivel === "todos" || nivelDoEvento === filtroNivel;
+      // 2. Busca pelas palavras 'pós', 'pos' ou 'pós-graduação' no título, categoria ou descrição
+      const textoCompleto = `${evento.titulo || ''} ${evento.categoria || ''} ${evento.descricao || ''}`.toLowerCase();
+      
+      const ehPos = textoCompleto.includes("pós") || textoCompleto.includes("pos");
+
+      const nivelDoEvento = evento.nivel ? evento.nivel : (ehPos ? "Pós-Graduação" : "Graduação");
+
+      const bateNivel =
+        filtroNivel === "todos" || nivelDoEvento === filtroNivel;
 
       return bateEngenharia && bateNivel;
     });
