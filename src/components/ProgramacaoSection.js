@@ -119,7 +119,7 @@ function EventCard({ ev, sponsor, engenhariaLabel }) {
         {ev.link_inscricao && (
           <a
             href={ev.link_inscricao} target="_blank" rel="noopener noreferrer"
-            style={{ marginTop: 4, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, background: BRAND.green, color: "#fff", borderRadius: 6, padding: "9px 12px", fontSize: 13, fontWeight: 700, textDecoration: "none" }}
+            style={{ display: "flex", alignItems: "center", gap: 8, background: BRAND.yellow, color: BRAND.greenDark, border: "none", padding: "13px 26px", borderRadius: 6, fontWeight: 800, fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 15, textDecoration: "none", boxShadow: "0px 4px 15px rgba(234, 179, 8, 0.4)", transition: "all 0.2s ease-in-out", }}
           >
             Inscreva-se <ExternalLink size={13} />
           </a>

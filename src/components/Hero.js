@@ -20,12 +20,11 @@ export default function Hero({ content }) {
   const c = content.hero; // Atalho para o objeto de conteúdo do Hero
 
   return (
-    // Fundo em gradiente diagonal (120°) entre verde-escuro e verde da marca.
-    <section style={{ background: `linear-gradient(120deg, ${BRAND.greenDark}, ${BRAND.green})`, color: "#fff" }}>
+  <section style={{ background: `linear-gradient(180deg, ${BRAND.greenDark} 0\%,${BRAND.green} 50%, transparent 100%)`, color: "#fff" }}>
 
       {/* Grade de 2 colunas: texto/CTA à esquerda, card de data/local à
           direita. Em telas estreitas vira 1 coluna (ver media query abaixo). */}
-      <div style={{ maxWidth: 1180, margin: "0 auto", padding: "70px 20px 60px", display: "grid", gridTemplateColumns: "1.2fr .8fr", gap: 40, alignItems: "center" }} className="hero-grid">
+      <div style={{ maxWidth: 1180, margin: "0 auto", padding: "70px 20px 60px", display: "grid", gridTemplateColumns: "1.2fr .8fr", gap: 40, alignItems: "center", height: 500 }} className="hero-grid">
 
         {/* --- Coluna esquerda: selo, título, subtítulo e botões --- */}
         <div>
@@ -48,14 +47,16 @@ export default function Hero({ content }) {
             <Link
               href={INSCRICAO_URL} target="_blank" rel="noopener noreferrer"
               className="btn-hover btn-inscreva-pulse"
-              style={{ display: "flex", alignItems: "center", gap: 8, background: BRAND.yellow, color: BRAND.greenDark, border: "none", padding: "13px 26px", borderRadius: 6, fontWeight: 800, fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 15, textDecoration: "none" }}
+              style={{ display: "flex", alignItems: "center", gap: 8, background: BRAND.yellow, color: BRAND.greenDark, border: "none", padding: "13px 26px", borderRadius: 6, fontWeight: 800, fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 20, textDecoration: "none", boxShadow: "0px 4px 15px rgba(234, 179, 8, 0.4)", transition: "all 0.2s ease-in-out", }}
+    
+
             >
               Inscreva-se <ExternalLink size={16} />
             </Link>
-            <Link href="/engenharias" className="btn-hover" style={{ background: BRAND.yellow, color: BRAND.greenDark, border: "none", padding: "13px 24px", borderRadius: 6, fontWeight: 800, fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 15, textDecoration: "none" }}>
+            <Link href="/engenharias" className="btn-hover" >
               {c.ctaPrimary}
             </Link>
-            <Link href="/noticias" className="btn-hover" style={{ background: "transparent", color: "#fff", border: "1.5px solid rgba(255,255,255,.5)", padding: "13px 24px", borderRadius: 6, fontWeight: 700, fontSize: 15, textDecoration: "none" }}>
+            <Link href="/noticias" className="btn-hover" >
               {c.ctaSecondary}
             </Link>
           </div>

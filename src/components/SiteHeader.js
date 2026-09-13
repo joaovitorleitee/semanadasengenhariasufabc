@@ -56,7 +56,7 @@ export default function SiteHeader() {
            ------------------------------------------------------------ */}
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none" }}>
           <Image
-            src="/icones/logo.png" // Arquivo da logo dentro de /public/icones
+            src="/icones/logo2.png" // Arquivo da logo dentro de /public/icones
             alt="Logo Semana das Engenharias" // Texto alternativo (acessibilidade/SEO)
             width={46}
             height={46}

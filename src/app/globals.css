@@ -51,7 +51,7 @@ html, body {
   --text-softer: #4a544d;  /* Variante próxima de text-soft */
 
   /* --- Bordas --------------------------------------------------------------- */
-  --border: #DDE6E0;      /* Borda padrão de cards e divisórias */
+  --border: #DADADA;     /* Borda padrão de cards e divisórias */
   --border-soft: #DADADA; /* Borda mais suave, usada em estados neutros */
 
   /* --- Estados (erro, destaque de navegação) -------------------------------- */
@@ -68,6 +68,7 @@ html, body {
   --brand-green-dark: #013D28;
   --brand-green-accent: #009B01;
   --brand-yellow: #FFD300;
+
 
   /* --- Tokens adaptativos para TEXTO em verde -------------------------------
      Usados quando o verde aparece como cor de texto/ícone (não como fundo).
@@ -88,6 +89,7 @@ html, body {
   --cat-outro-bg: #F1F1F1;         --cat-outro-fg: #555555;         --cat-outro-border: #DADADA;
 }
 
+
 /* ============================================================================
    TEMA ESCURO — sobrescreve as variáveis acima quando o <html> tem o
    atributo data-theme="dark" (definido via JS pelo ThemeProvider).
@@ -95,7 +97,9 @@ html, body {
    --brand-yellow NÃO aparecem aqui de propósito: continuam iguais ao tema
    claro nos fundos/botões/emblemas, conforme pedido.
    ============================================================================ */
-[data-theme="dark"] {
+
+
+   [data-theme="dark"] {
   color-scheme: dark; /* Avisa o navegador que o tema é escuro */
 
   /* --- Fundos e superfícies (agora escuros) --------------------------------- */
@@ -205,4 +209,39 @@ button {
 .theme-toggle:hover {
   transform: translateY(-1px);
   border-color: var(--brand-green);
+}
+
+.btn-hover {
+  background-color: rgba(1, 61, 40, 0.6);
+  backdrop-filter: blur(4px);
+  border: 2px solid var(--brand-yellow);
+  padding: 13px 24px;
+  border-radius: 6px;
+  font-weight: 700px;
+  font-family: var(--font-league-spartan), sans-serif;
+  font-size: 17px;
+  text-decoration: none;
+  color: #ffffff;            /* Texto verde escuro no claro */
+  transition: all 0.2s ease-in-out;
+
+}
+
+/* Hover no Tema Claro */
+.btn-hover:hover {
+  background-color: rgba(1, 61, 40, 0.85);
+  border-color: var(--brand-yellow);
+  color: var(--brand-yellow);   /* Leve fundo verde ao passar o mouse */
+}
+
+/* 2. Estado padrão no Tema Escuro */
+[data-theme="dark"] .btn-hover {
+  border-color: #ffffff;                      /* Borda branca no escuro */
+  color: #ffffff;                             /* Texto branco no escuro */
+}
+
+/* Hover no Tema Escuro */
+[data-theme="dark"] .btn-hover:hover {
+  border-color: var(--brand-yellow);         /* Borda amarela no hover (ou a cor que desejar) */
+  color: var(--brand-yellow);
+  background-color: rgba(255, 255, 255, 0.1);
 }
