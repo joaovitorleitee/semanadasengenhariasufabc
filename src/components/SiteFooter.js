@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Instagram, Linkedin, Facebook } from "lucide-react"; // Ícones das redes sociais
-import { BRAND } from "@/lib/brand";
+import { Instagram, Linkedin, Facebook, ExternalLink } from "lucide-react"; // Ícones das redes sociais + link externo
+import { BRAND, INSCRICAO_URL } from "@/lib/brand";
 import { DEFAULT_CONTENT } from "@/lib/brand";
 
 // ============================================================================
@@ -60,8 +60,10 @@ export default function SiteFooter({ content }) {
         <div>
           <strong style={{ display: "block", marginBottom: 12, fontSize: 14, color: BRAND.yellow }}>Navegação</strong>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            {/* Lista de pares [url, texto] percorrida para gerar cada link */}
-            {[["/", "Início"], ["/evento", "O Evento"], ["/engenharias", "Engenharias"], ["/noticias", "Notícias"], ["/patrocinadores", "Patrocinadores"]].map(([href, label]) => (
+            {/* Lista de pares [url, texto] percorrida para gerar cada link.
+                Inclui "Programação" (que faltava aqui, apesar de já estar
+                no menu do header). */}
+            {[["/", "Início"], ["/programacao", "Programação"], ["/evento", "O Evento"], ["/engenharias", "Engenharias"], ["/noticias", "Notícias"], ["/patrocinadores", "Patrocinadores"]].map(([href, label]) => (
               <Link
                 key={href}
                 className="footer-nav-link" // Ativa o sublinhado animado no hover (CSS abaixo)
@@ -78,6 +80,15 @@ export default function SiteFooter({ content }) {
                 {label}
               </Link>
             ))}
+            {/* Link "Inscreva-se": mesmo destino do header, em amarelo
+                (cor de destaque) para diferenciar dos links de navegação
+                comuns acima, que são só informativos. */}
+            <Link
+              href={INSCRICAO_URL} target="_blank" rel="noopener noreferrer"
+              style={{ display: "flex", alignItems: "center", gap: 6, color: BRAND.yellow, fontSize: 14, fontWeight: 800, textDecoration: "none", width: "fit-content", marginTop: 4 }}
+            >
+              Inscreva-se <ExternalLink size={13} />
+            </Link>
           </div>
         </div>
 

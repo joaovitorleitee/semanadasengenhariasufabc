@@ -5,8 +5,8 @@
 import { useState } from "react"; // Guarda se o menu mobile está aberto ou fechado
 import Link from "next/link"; // Componente de link do Next.js (navegação sem recarregar a página)
 import { usePathname } from "next/navigation"; // Hook que retorna a URL atual
-import { Menu, X, Lock } from "lucide-react"; // Ícones: hambúrguer, "X" de fechar, cadeado (Admin)
-import { BRAND } from "@/lib/brand"; // Cores/tokens da marca (verde, amarelo, bordas etc.)
+import { Menu, X, Lock, ExternalLink } from "lucide-react"; // Ícones: hambúrguer, "X" de fechar, cadeado (Admin), seta de link externo
+import { BRAND, INSCRICAO_URL } from "@/lib/brand"; // Cores/tokens da marca (verde, amarelo, bordas etc.) + link de inscrição
 import Image from "next/image"; // Componente de imagem otimizada do Next.js (logo)
 import ThemeToggle from "./ThemeToggle"; // Botão de alternância entre tema claro/escuro
 
@@ -99,6 +99,20 @@ export default function SiteHeader() {
             </Link>
           ))}
 
+          {/* Botão "Inscreva-se": leva para a página de inscrição na
+              Blumie, em nova aba. Fica com fundo amarelo sólido (mesma cor
+              do CTA principal do Hero) para se destacar dos demais links
+              do menu, que são só texto. */}
+          <Link
+            href={INSCRICAO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-hover"
+            style={{ marginLeft: 6, display: "flex", alignItems: "center", gap: 6, padding: "9px 16px", borderRadius: 6, background: BRAND.yellow, color: BRAND.greenDark, fontFamily: "var(--font-league-spartan), sans-serif", fontWeight: 800, fontSize: 14, textDecoration: "none" }}
+          >
+            Inscreva-se <ExternalLink size={14} />
+          </Link>
+
           {/* Botão de alternância de tema — fica ANTES do link "Admin",
               conforme pedido. */}
           <ThemeToggle style={{ marginLeft: 6 }} />
@@ -156,6 +170,15 @@ export default function SiteHeader() {
               {l.label}
             </Link>
           ))}
+          {/* Botão "Inscreva-se", também disponível no menu mobile — mesmo
+              destaque amarelo do menu desktop. */}
+          <Link
+            href={INSCRICAO_URL} target="_blank" rel="noopener noreferrer"
+            onClick={() => setMenuOpen(false)}
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "calc(100% - 40px)", margin: "14px 20px", padding: "12px", borderRadius: 6, background: BRAND.yellow, color: BRAND.greenDark, fontWeight: 800, fontFamily: "var(--font-league-spartan), sans-serif", textDecoration: "none" }}
+          >
+            Inscreva-se <ExternalLink size={14} />
+          </Link>
           {/* Link para a área administrativa, também disponível no menu mobile */}
           <Link
             href="/admin" onClick={() => setMenuOpen(false)}

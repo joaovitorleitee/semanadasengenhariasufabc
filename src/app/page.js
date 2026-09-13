@@ -3,6 +3,7 @@
 import PublicLayout from "@/components/PublicLayout";
 import Hero from "@/components/Hero";
 import EventoSection from "@/components/EventoSection";
+import ProximosEventosSection from "@/components/ProximosEventosSection";
 import NoticiasSection from "@/components/NoticiasSection";
 import Maps from "@/components/maps";
 import { DEFAULT_CONTENT } from "@/lib/brand";
@@ -30,6 +31,13 @@ export default function HomePage() {
               padrão definidos em brand.js, independente do que estiver
               salvo no painel admin. */}
           <Hero content={DEFAULT_CONTENT} />
+          {/* Próximos eventos aparece logo após o Hero, antes de "O Evento":
+              como é o "carro-chefe" do site (palestras/minicursos), fica
+              melhor já bem no topo da home do que mais para baixo. Some
+              sozinha se ainda não houver evento publicado com data futura,
+              então é seguro deixar sempre aqui, independente do que a
+              organização for cadastrando. */}
+          <ProximosEventosSection />
           {/* Seção "O Evento": usa o conteúdo real (Supabase + fallback) */}
           <EventoSection content={content} />
           {/* Lista resumida de notícias: "compact" limita a 3 posts */}

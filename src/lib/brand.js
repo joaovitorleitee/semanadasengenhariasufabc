@@ -19,6 +19,11 @@
 // de nenhum JavaScript.
 // ============================================================================
 
+// Link de inscrição da edição atual (Blumie). Centralizado aqui para não
+// repetir essa URL longa em Header, Hero e Footer — se um dia o link mudar,
+// só precisa atualizar em um lugar.
+export const INSCRICAO_URL = "https://blumitalents.com/eventos/vii-semana-das-engenharias-da-ufabc?utm_source=copy&utm_medium=social&utm_campaign=evento_173f2cf8-1c8a-4928-8f11-4698af1bae13";
+
 export const BRAND = {
   // --- Cores "de marca" (verde e amarelo do manual) ------------------------
   // Estas cores permanecem EXATAMENTE as mesmas nos dois temas, de propósito:

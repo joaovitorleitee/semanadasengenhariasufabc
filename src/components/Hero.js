@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, MapPin } from "lucide-react"; // Ícones usados no card de data/local
-import { BRAND } from "@/lib/brand";
+import { Calendar, MapPin, ExternalLink } from "lucide-react"; // Ícones usados no card de data/local e no CTA de inscrição
+import { BRAND, INSCRICAO_URL } from "@/lib/brand";
 import { DEFAULT_CONTENT } from "@/lib/brand";
 
 // ============================================================================
@@ -39,9 +39,19 @@ export default function Hero({ content }) {
           </h1>
           <p style={{ fontSize: 17, color: "#DCEFE2", maxWidth: 560, lineHeight: 1.6 }}>{c.subtitle}</p>
 
-          {/* Botões de ação: um preenchido (amarelo) e um contornado
-              (transparente com borda branca semitransparente). */}
+          {/* Botões de ação: "Inscreva-se" primeiro (o mais chamativo —
+              tem um leve brilho pulsante, ver <style> no fim do arquivo,
+              pois é a ação que mais importa agora), depois o preenchido
+              (amarelo sólido) e o contornado (transparente com borda
+              branca semitransparente). */}
           <div style={{ display: "flex", gap: 12, marginTop: 28, flexWrap: "wrap" }}>
+            <Link
+              href={INSCRICAO_URL} target="_blank" rel="noopener noreferrer"
+              className="btn-hover btn-inscreva-pulse"
+              style={{ display: "flex", alignItems: "center", gap: 8, background: BRAND.yellow, color: BRAND.greenDark, border: "none", padding: "13px 26px", borderRadius: 6, fontWeight: 800, fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 15, textDecoration: "none" }}
+            >
+              Inscreva-se <ExternalLink size={16} />
+            </Link>
             <Link href="/engenharias" className="btn-hover" style={{ background: BRAND.yellow, color: BRAND.greenDark, border: "none", padding: "13px 24px", borderRadius: 6, fontWeight: 800, fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 15, textDecoration: "none" }}>
               {c.ctaPrimary}
             </Link>
@@ -86,6 +96,20 @@ export default function Hero({ content }) {
           transform: translateY(-2px); /* Eleva o botão suavemente */
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Adiciona uma sombra leve */
           transition: transform 0.25s ease-in-out;
+        }
+      `}</style>
+
+      {/* Brilho pulsante do botão "Inscreva-se": um halo amarelo que cresce
+          e desaparece em loop, pra chamar mais atenção que os outros dois
+          botões (que ficam parados). Só afeta esse botão (.btn-inscreva-pulse),
+          os demais continuam exatamente como eram. */}
+      <style>{`
+        .btn-inscreva-pulse {
+          animation: pulseInscreva 2.2s ease-in-out infinite;
+        }
+        @keyframes pulseInscreva {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(255, 211, 0, 0.55); }
+          50% { box-shadow: 0 0 0 10px rgba(255, 211, 0, 0); }
         }
       `}</style>
     </section>

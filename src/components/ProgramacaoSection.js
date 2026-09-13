@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { CalendarDays, Clock, MapPin, User, Layers, Users, ExternalLink } from "lucide-react";
-import { BRAND, EVENT_CATEGORY_COLORS, EVENT_LEVELS, fmtTime, fmtDateRange } from "@/lib/brand";
+import { useMemo, useState, useEffect } from "react";
+import { CalendarDays, Clock, MapPin, User, Layers, Users, ExternalLink, LayoutGrid } from "lucide-react";
+import { BRAND, EVENT_CATEGORY_COLORS, EVENT_LEVELS, fmtTime, fmtDateRange, fmtDateShort } from "@/lib/brand";
 import { useEventos } from "@/lib/useEventos"; // Hook que busca os eventos da agenda no Supabase
 import { useSponsors } from "@/lib/useSponsors"; // Hook que busca os patrocinadores (para exibir no card do evento)
 
@@ -33,7 +33,7 @@ function CategoryPill({ categoria }) {
 // elemento decorativo/de ação, não texto corrido, então mantém a cor cheia
 // da marca conforme pedido.
 // ============================================================================
-function EventCard({ ev, sponsor }) {
+function EventCard({ ev, sponsor, engenhariaLabel }) {
   return (
     <div
       style={{
@@ -58,6 +58,14 @@ function EventCard({ ev, sponsor }) {
             </span>
           )}
         </div>
+
+        {/* Só aparece na Visão por dia: como ali os eventos de várias
+            engenharias ficam misturados num mesmo dia, este selinho ajuda a
+            identificar rapidamente de qual curso é cada evento — na Visão
+            por engenharia isso já é óbvio pela aba selecionada. */}
+        {engenhariaLabel && (
+          <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)" }}>{engenhariaLabel}</span>
+        )}
 
         {/* Título do evento */}
         <h3 style={{ fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 17, color: BRAND.heading, margin: 0, lineHeight: 1.3 }}>
@@ -124,6 +132,43 @@ function EventCard({ ev, sponsor }) {
 }
 
 // ============================================================================
+// Funções auxiliares "puras" (sem estado, sem hooks) usadas tanto na Visão
+// por Engenharia quanto na Visão por Dia — ficam fora do componente porque
+// não dependem de nada que more dentro dele.
+// ============================================================================
+
+// Decide se um evento bate com o nível selecionado no filtro. Se o evento
+// não tiver o campo "nivel" preenchido (compatível com eventos cadastrados
+// antes desse campo existir), tenta adivinhar pelo texto do título/
+// categoria/descrição contendo "pós"/"pos", assumindo Graduação como padrão.
+function bateNivel(e, filtroNivel) {
+  if (filtroNivel === "todos") return true;
+  const textoCompleto = `${e.titulo || ""} ${e.categoria || ""} ${e.descricao || ""}`.toLowerCase();
+  const ehPos = textoCompleto.includes("pós") || textoCompleto.includes("pos");
+  const nivelDoEvento = e.nivel ? e.nivel : (ehPos ? "Pós-Graduação" : "Graduação");
+  return nivelDoEvento === filtroNivel;
+}
+
+// Expande um evento em uma lista de datas "AAAA-MM-DD", uma para cada dia
+// entre data_inicio e data_fim (inclusive). Eventos de um dia só retornam
+// uma lista com uma única data. Usado pela Visão por dia, para que um
+// evento de vários dias apareça em todas as abas de data que ele cobre.
+function expandirDatas(ev) {
+  if (!ev.data_inicio) return [];
+  const fim = ev.data_fim || ev.data_inicio;
+  const datas = [];
+  let cursor = new Date(`${ev.data_inicio}T00:00:00`);
+  const dataFim = new Date(`${fim}T00:00:00`);
+  let guarda = 0; // trava de segurança para nunca entrar num loop gigante
+  while (cursor <= dataFim && guarda < 31) {
+    datas.push(cursor.toISOString().slice(0, 10));
+    cursor.setDate(cursor.getDate() + 1);
+    guarda++;
+  }
+  return datas;
+}
+
+// ============================================================================
 // ProgramacaoSection.js — Seção principal da Programação: filtros (por
 // engenharia e por nível) + grade de EventCard com os eventos filtrados.
 // ============================================================================
@@ -139,6 +184,12 @@ export default function ProgramacaoSection({ content }) {
   const [tab, setTab] = useState("todos");
   // Filtro de nível selecionado: "todos", "Graduação", "Pós-Graduação" ou "Geral".
   const [filtroNivel, setFiltroNivel] = useState("todos");
+
+  // NOVO: alterna entre ver a programação agrupada por Engenharia (padrão,
+  // comportamento de sempre) ou por Dia (mistura todas as engenharias, mas
+  // separa por data — útil pra quem só quer saber "o que tem hoje").
+  const [viewMode, setViewMode] = useState("engenharia"); // "engenharia" | "dia"
+  const [diaSelecionado, setDiaSelecionado] = useState(null);
 
   // Monta um "dicionário" { id_do_patrocinador: dadosDoPatrocinador } para
   // conseguir achar rapidamente o patrocinador de cada evento pelo ID.
@@ -180,18 +231,52 @@ export default function ProgramacaoSection({ content }) {
         bateEngenharia = val === String(tab) || (engObj && val === engObj.nome);
       }
 
-      // 2. Filtro por Nível — se o evento não tem "nivel" definido
-      // explicitamente, tenta adivinhar pelo texto (título/categoria/
-      // descrição contendo "pós"/"pos"), assumindo Graduação como padrão.
-      const textoCompleto = `${e.titulo || ""} ${e.categoria || ""} ${e.descricao || ""}`.toLowerCase();
-      const ehPos = textoCompleto.includes("pós") || textoCompleto.includes("pos");
-      const nivelDoEvento = e.nivel ? e.nivel : (ehPos ? "Pós-Graduação" : "Graduação");
+      // 2. Filtro por Nível
+      const bateNivelResult = bateNivel(e, filtroNivel);
 
-      const bateNivel = filtroNivel === "todos" || nivelDoEvento === filtroNivel;
-
-      return bateEngenharia && bateNivel;
+      return bateEngenharia && bateNivelResult;
     });
   }, [eventos, tab, filtroNivel, engenharias]);
+
+  // NOVO: eventos filtrados só pelo nível (ignora a aba de engenharia) —
+  // é a base da Visão por dia, que mistura eventos de todas as engenharias
+  // num mesmo dia.
+  const eventosDoNivel = useMemo(
+    () => (eventos || []).filter((e) => bateNivel(e, filtroNivel)),
+    [eventos, filtroNivel]
+  );
+
+  // NOVO: lista de dias (formato "AAAA-MM-DD") que têm pelo menos um evento
+  // publicado, em ordem cronológica — vira as abas da Visão por dia.
+  const diasComEventos = useMemo(() => {
+    const set = new Set();
+    eventosDoNivel.forEach((e) => expandirDatas(e).forEach((d) => set.add(d)));
+    return Array.from(set).sort();
+  }, [eventosDoNivel]);
+
+  // Ao entrar na Visão por dia (ou quando a lista de dias disponíveis muda),
+  // garante que sempre exista um dia selecionado — por padrão, o primeiro
+  // da lista (o mais próximo cronologicamente).
+  useEffect(() => {
+    if (viewMode === "dia" && !diaSelecionado && diasComEventos.length > 0) {
+      setDiaSelecionado(diasComEventos[0]);
+    }
+  }, [viewMode, diasComEventos, diaSelecionado]);
+
+  // NOVO: eventos do dia selecionado na Visão por dia — de qualquer
+  // engenharia, desde que o intervalo de datas do evento inclua esse dia.
+  const filtradosPorDia = useMemo(() => {
+    if (!diaSelecionado) return [];
+    return eventosDoNivel.filter((e) => expandirDatas(e).includes(diaSelecionado));
+  }, [eventosDoNivel, diaSelecionado]);
+
+  // Contagem de eventos por dia, para mostrar entre parênteses nas abas da
+  // Visão por dia (mesma ideia do contagemPorTab, mas por data).
+  const contagemPorDia = useMemo(() => {
+    const map = {};
+    eventosDoNivel.forEach((e) => expandirDatas(e).forEach((d) => { map[d] = (map[d] || 0) + 1; }));
+    return map;
+  }, [eventosDoNivel]);
 
   // Conta quantos eventos existem por aba (para mostrar o número entre
   // parênteses ao lado do nome da aba, ex: "Todos (24)").
@@ -217,15 +302,46 @@ export default function ProgramacaoSection({ content }) {
       <h2 style={{ fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 30, color: BRAND.heading, margin: "8px 0 6px" }}>
         Palestras, minicursos e eventos por engenharia
       </h2>
-      <p style={{ color: "var(--text-muted)", marginBottom: 26, maxWidth: 680 }}>
+      <p style={{ color: "var(--text-muted)", marginBottom: 20, maxWidth: 680 }}>
         Escolha uma engenharia para ver só a programação dela, ou veja tudo em um só lugar.
       </p>
 
       {/* ---------------------------------------------------------------
+          NOVO: alternador entre Visão por Engenharia (padrão) e Visão por
+          Dia. A Visão por dia é útil pra quem só quer saber "o que tem
+          hoje", sem precisar clicar engenharia por engenharia.
+         --------------------------------------------------------------- */}
+      <div style={{ display: "inline-flex", gap: 4, padding: 4, background: "var(--surface-alt)", border: `1px solid ${BRAND.border}`, borderRadius: 999, marginBottom: 18 }}>
+        {[
+          { id: "engenharia", label: "Por engenharia", Icon: Layers },
+          { id: "dia", label: "Por dia", Icon: CalendarDays },
+        ].map(({ id, label, Icon }) => {
+          const active = viewMode === id;
+          return (
+            <button
+              key={id}
+              onClick={() => setViewMode(id)}
+              style={{
+                display: "flex", alignItems: "center", gap: 7,
+                padding: "8px 14px", borderRadius: 999, cursor: "pointer", border: "none",
+                background: active ? BRAND.green : "transparent",
+                color: active ? "#fff" : "var(--text-muted)",
+                fontWeight: 700, fontSize: 13, fontFamily: "var(--font-league-spartan), sans-serif",
+              }}
+            >
+              <Icon size={14} />
+              {label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ---------------------------------------------------------------
           Abas por Engenharia: "Todos", "Geral" e uma por engenharia.
           A aba ativa fica com fundo verde sólido (fixo); as inativas usam
-          fundo/texto adaptáveis ao tema.
+          fundo/texto adaptáveis ao tema. Só aparece na Visão por engenharia.
          --------------------------------------------------------------- */}
+      {viewMode === "engenharia" && (
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }} className="prog-tabs">
         {tabs.map((t) => {
           const active = tab === t.id;
@@ -268,10 +384,47 @@ export default function ProgramacaoSection({ content }) {
           );
         })}
       </div>
+      )}
+
+      {/* ---------------------------------------------------------------
+          NOVO: Abas por Dia — só aparecem na Visão por dia. Uma aba para
+          cada data que tenha pelo menos um evento (calculado a partir de
+          data_inicio/data_fim de todos os eventos publicados), em ordem
+          cronológica. Mesmo padrão visual das abas de engenharia.
+         --------------------------------------------------------------- */}
+      {viewMode === "dia" && (
+        diasComEventos.length === 0 ? null : (
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }} className="prog-tabs">
+          {diasComEventos.map((dia) => {
+            const active = diaSelecionado === dia;
+            return (
+              <button
+                key={dia}
+                onClick={() => setDiaSelecionado(dia)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  padding: "9px 15px", borderRadius: 999, cursor: "pointer",
+                  border: `1.5px solid ${active ? BRAND.green : BRAND.border}`,
+                  background: active ? BRAND.green : "var(--surface)",
+                  color: active ? "#fff" : BRAND.heading,
+                  fontWeight: 700, fontSize: 13, fontFamily: "var(--font-league-spartan), sans-serif",
+                  textTransform: "capitalize",
+                }}
+              >
+                <CalendarDays size={14} color={active ? "#fff" : BRAND.accentText} />
+                {fmtDateShort(dia)}
+                <span style={{ opacity: 0.75, fontWeight: 600 }}>({contagemPorDia[dia] || 0})</span>
+              </button>
+            );
+          })}
+        </div>
+        )
+      )}
 
       {/* ---------------------------------------------------------------
           Abas por Nível (Graduação / Pós-Graduação / Geral): mesmo
           padrão visual das abas de engenharia, em versão mais compacta.
+          Vale para as duas visões (engenharia e dia).
          --------------------------------------------------------------- */}
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 30 }}>
         {niveisTabs.map((t) => {
@@ -297,23 +450,48 @@ export default function ProgramacaoSection({ content }) {
       {/* ---------------------------------------------------------------
           Conteúdo principal: carregando / erro / lista vazia / grade de
           eventos filtrados (mesmo padrão de estados usado nas outras
-          seções que buscam dados do Supabase).
+          seções que buscam dados do Supabase). Na Visão por dia, usa
+          filtradosPorDia; na Visão por engenharia, usa filtrados (como
+          já era antes).
          --------------------------------------------------------------- */}
-      {eventos === null ? (
-        <p style={{ color: "var(--text-muted)" }}>Carregando programação…</p>
-      ) : error ? (
-        <p style={{ color: "var(--error)" }}>{error}</p>
-      ) : filtrados.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "70px 20px", border: `1.5px dashed ${BRAND.border}`, borderRadius: 12, color: "var(--text-muted)", background: "var(--surface)" }}>
-          Nenhum evento publicado ainda para esse filtro. Volte em breve — a programação está sendo atualizada.
-        </div>
-      ) : (
-        // Grade responsiva: cada coluna tem no mínimo 280px, e o número de
-        // colunas se ajusta automaticamente ao espaço disponível.
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 18 }}>
-          {filtrados.map((ev) => <EventCard key={ev.id} ev={ev} sponsor={ev.patrocinador_id ? sponsorById[ev.patrocinador_id] : null} />)}
-        </div>
-      )}
+      {(() => {
+        const listaAtual = viewMode === "dia" ? filtradosPorDia : filtrados;
+        const semDiaSelecionavel = viewMode === "dia" && diasComEventos.length === 0;
+        if (eventos === null) {
+          return <p style={{ color: "var(--text-muted)" }}>Carregando programação…</p>;
+        }
+        if (error) {
+          return <p style={{ color: "var(--error)" }}>{error}</p>;
+        }
+        if (semDiaSelecionavel || listaAtual.length === 0) {
+          return (
+            <div style={{ textAlign: "center", padding: "70px 20px", border: `1.5px dashed ${BRAND.border}`, borderRadius: 12, color: "var(--text-muted)", background: "var(--surface)" }}>
+              Nenhum evento publicado ainda para esse filtro. Volte em breve — a programação está sendo atualizada.
+            </div>
+          );
+        }
+        return (
+          // Grade responsiva: cada coluna tem no mínimo 280px, e o número de
+          // colunas se ajusta automaticamente ao espaço disponível.
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 18 }}>
+            {listaAtual.map((ev) => {
+              // Na Visão por dia, mostra de qual engenharia é o evento
+              // (já que ali eles ficam todos misturados no mesmo dia).
+              const engenhariaLabel = viewMode === "dia"
+                ? (e => e ? `${e.n} — ${e.nome}` : "Geral")(engenharias.find((eng) => String(eng.n) === String(ev.engenharia_n)))
+                : null;
+              return (
+                <EventCard
+                  key={ev.id}
+                  ev={ev}
+                  sponsor={ev.patrocinador_id ? sponsorById[ev.patrocinador_id] : null}
+                  engenhariaLabel={engenhariaLabel}
+                />
+              );
+            })}
+          </div>
+        );
+      })()}
 
       {/* Em telas estreitas (até 700px), as abas de engenharia viram uma
           lista horizontal com rolagem (em vez de quebrar linha), para
