@@ -18,6 +18,7 @@ export default function SiteFooter({ content }) {
           display: "grid",
           gridTemplateColumns: "1.3fr 1fr 1fr",
           gap: 32,
+          minWidth: 0,
         }}
         className="footer-grid"
       >
@@ -111,8 +112,8 @@ export default function SiteFooter({ content }) {
           <strong style={{ display: "block", marginBottom: 12, fontSize: 14, color: BRAND.yellow }}>
             Contato
           </strong>
-          <p style={{ color: "#CFE6D7", fontSize: 14, margin: "4px 0" }}>{c.email}</p>
-          <p style={{ color: "#CFE6D7", fontSize: 14, margin: "4px 0" }}>{c.address}</p>
+          <p style={{ color: "#CFE6D7", fontSize: 14, margin: "4px 0", overflowWrap: "anywhere" }}>{c.email}</p>
+          <p style={{ color: "#CFE6D7", fontSize: 14, margin: "4px 0", overflowWrap: "anywhere" }}>{c.address}</p>
         </div>
       </div>
 
@@ -164,6 +165,19 @@ export default function SiteFooter({ content }) {
           background: rgba(255, 255, 255, 0.15) !important;
           color: #fff !important;
           border-color: rgba(255, 255, 255, 0.4) !important;
+        }
+
+        /* Em telas estreitas, as 3 colunas do rodapé (Sobre / Navegação /
+           Contato) viram 1 coluna só, empilhadas — igual já acontece em
+           outras grades do site (ex: .evento-grid, .curso-grid). Essa regra
+           estava faltando e era a causa da faixa branca no celular: sem
+           ela, o e-mail de contato (texto sem espaço, não quebra linha)
+           forçava a 3ª coluna a ficar mais larga que a tela. */
+        @media (max-width: 640px) {
+          .footer-grid {
+            grid-template-columns: 1fr !important;
+            gap: 28px !important;
+          }
         }
       `}</style>
     </footer>

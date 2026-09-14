@@ -22,11 +22,17 @@
 }
 
 /* Remove margem/padding padrão do navegador e garante que a página ocupe
-   100% da altura da tela (necessário para o rodapé "colar" embaixo). */
+   100% da altura da tela (necessário para o rodapé "colar" embaixo).
+   "overflow-x: hidden" é uma rede de segurança: impede que qualquer
+   elemento que acidentalmente fique mais largo que a tela (texto sem
+   quebra de linha, grade sem breakpoint etc.) empurre a página inteira
+   para o lado e deixe uma faixa branca sobrando no celular. */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* ============================================================================

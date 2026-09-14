@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plus, Pencil, Trash2, Eye, EyeOff, CalendarDays } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, CalendarDays, Download } from "lucide-react";
 import { BRAND, fmtTime, fmtDateRange, EVENT_LEVELS } from "@/lib/brand";
 import { useEventos } from "@/lib/useEventos";
 import { useSponsors } from "@/lib/useSponsors";
@@ -72,6 +72,24 @@ export default function EventsManager({ engenharias, notify }) {
     if (ok) notify("Evento excluído.", "success");
   };
 
+  // Gera e baixa um arquivo .txt com o título de TODAS as programações
+  // cadastradas (todos os status e engenharias, ignorando os filtros da
+  // tela) — uma por linha, sem horário/local/outros detalhes.
+  const handleExportTitulos = () => {
+    if (!eventos || eventos.length === 0) return;
+    const conteudo = eventos.map((ev) => ev.titulo).join("\n");
+    const blob = new Blob([conteudo], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "titulos-programacao.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    notify("Lista de títulos exportada.", "success");
+  };
+
   if (editing) {
     return (
       <div style={{ maxWidth: 780 }}>
@@ -94,9 +112,19 @@ export default function EventsManager({ engenharias, notify }) {
           <h1 style={{ fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 24, color: BRAND.greenDark, margin: 0 }}>Programação</h1>
           <p style={{ color: "#5c655e", fontSize: 13.5, margin: "4px 0 0" }}>Palestras, minicursos e demais eventos, organizados por engenharia. Aparecem em <strong>/programacao</strong> assim que publicados.</p>
         </div>
-        <button onClick={() => setEditing("new")} style={{ display: "flex", alignItems: "center", gap: 8, background: BRAND.green, color: "#fff", border: "none", padding: "11px 18px", borderRadius: 6, fontWeight: 700, cursor: "pointer", fontSize: 14 }}>
-          <Plus size={16} /> Novo evento
-        </button>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <button
+            onClick={handleExportTitulos}
+            disabled={!eventos || eventos.length === 0}
+            title="Baixa um .txt com o título de todas as programações cadastradas"
+            style={{ display: "flex", alignItems: "center", gap: 8, background: "#fff", color: BRAND.greenDark, border: `1.5px solid ${BRAND.border}`, padding: "11px 18px", borderRadius: 6, fontWeight: 700, cursor: eventos && eventos.length ? "pointer" : "not-allowed", fontSize: 14, opacity: eventos && eventos.length ? 1 : 0.5 }}
+          >
+            <Download size={16} /> Exportar títulos
+          </button>
+          <button onClick={() => setEditing("new")} style={{ display: "flex", alignItems: "center", gap: 8, background: BRAND.green, color: "#fff", border: "none", padding: "11px 18px", borderRadius: 6, fontWeight: 700, cursor: "pointer", fontSize: 14 }}>
+            <Plus size={16} /> Novo evento
+          </button>
+        </div>
       </div>
 
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
