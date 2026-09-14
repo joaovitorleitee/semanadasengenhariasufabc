@@ -7,7 +7,7 @@ import { fieldInput, fieldLabel } from "./adminStyles";
 
 const emptyForm = {
   titulo: "",
-  categoria: EVENT_CATEGORIES[0] || "Palestra",
+  categoria: EVENT_CATEGORIES[0] || "Sem tipo definido",
   nivel: EVENT_LEVELS[0] || "Graduação",
   engenharia_n: "",
   palestrante: "",
@@ -82,11 +82,15 @@ export default function EventForm({ initial, engenharias = [], sponsors = [], on
   <div>
     <label style={fieldLabel}>Categoria</label>
     <select value={form.categoria} onChange={(e) => set("categoria", e.target.value)} style={fieldInput}>
+      <option value="Sem tipo definido">Sem tipo definido</option>
       <option value="Palestra">Palestra</option>
-      <option value="Minicurso">Minicurso</option>
-      <option value="Mesa Redonda">Mesa Redonda</option>
       <option value="Workshop">Workshop</option>
+      <option value="Painel">Painel</option>
+      <option value="Roda de conversa">Roda de conversa</option>
+      <option value="Processo seletivo ao vivo">Processo seletivo ao vivo</option>
+      <option value="Networking">Networking</option>
       <option value="Geral">Geral</option>
+      
     </select>
   </div>
 
