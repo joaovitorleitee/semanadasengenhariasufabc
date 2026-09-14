@@ -2,19 +2,12 @@
 
 // ============================================================================
 // ProximosEventosSection.js — Bloco de destaque na Home com os próximos
-// eventos da Programação (palestras, minicursos etc.), para quem só entra na
-// página inicial também descobrir que essa parte do site existe.
-//
-// Não substitui a página completa /programacao — é só uma "vitrine" com os
-// eventos mais próximos, sempre com um botão levando para a lista inteira.
-//
-// MODO ESCURO: usa os mesmos tokens (BRAND.*, var(--...)) já usados no
-// restante do site, então já nasce compatível com os dois temas.
+// eventos da Programação (palestras, minicursos etc.).
 // ============================================================================
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { CalendarDays, Clock, MapPin, ArrowRight, ExternalLink } from "lucide-react";
+import { Clock, MapPin, ArrowRight, ExternalLink } from "lucide-react";
 import { BRAND, EVENT_CATEGORY_COLORS, fmtTime, fmtDateRange } from "@/lib/brand";
 import { useEventos } from "@/lib/useEventos";
 
@@ -30,19 +23,13 @@ function CategoryPill({ categoria }) {
   );
 }
 
-// Cartão compacto de um evento — versão resumida do card usado em
-// ProgramacaoSection.js, só com o essencial (não repete descrição/vagas/
-// patrocinador aqui, pois é uma prévia, não a página completa).
+// Cartão compacto de um evento
 function EventoMiniCard({ ev }) {
   return (
     <div
       style={{
         background: "var(--surface)", border: `1px solid ${BRAND.border}`, borderRadius: 12,
         padding: "16px 18px", display: "flex", flexDirection: "column", gap: 8,
-        // height: "100%" garante que o card ocupe toda a altura da célula
-        // do grid (que já fica igual entre os 4 cards, do tamanho do mais
-        // alto). Sem isso, cards com menos conteúdo "encolhiam" e o botão
-        // de cada um ficava numa altura diferente — a causa do desalinhamento.
         height: "100%",
         transition: "box-shadow .15s, transform .15s",
       }}
@@ -75,14 +62,6 @@ function EventoMiniCard({ ev }) {
         )}
       </div>
 
-      {/* Mesmo botão "Inscreva-se" da página /programacao — sem ele, a
-          vitrine da home só mostrava a informação mas não deixava a pessoa
-          já se inscrever com um clique, obrigando a ir até a página
-          completa por nada. Só aparece se o evento tiver link cadastrado.
-          marginTop: "auto" gruda o botão sempre no rodapé do card, na MESMA
-          altura em todos os cards da fileira — independente de quanto
-          texto cada um tem acima (título mais curto/longo, com ou sem
-          local etc.). */}
       {ev.link_inscricao && (
         <a
           href={ev.link_inscricao} target="_blank" rel="noopener noreferrer"
@@ -98,13 +77,8 @@ function EventoMiniCard({ ev }) {
 }
 
 export default function ProximosEventosSection() {
-  // Reaproveita o mesmo hook da página /programacao — só eventos publicados.
   const { eventos } = useEventos({ onlyPublished: true });
 
-  // Seleciona os próximos eventos: ignora os que já terminaram (data_fim ou
-  // data_inicio antes de hoje) e pega os MAX_EVENTOS mais próximos. Eventos
-  // sem data cadastrada (ainda em rascunho de informação) entram no fim da
-  // lista, para não "furar a fila" de quem já tem data marcada.
   const proximos = useMemo(() => {
     if (!eventos) return null;
     const hojeISO = new Date().toISOString().slice(0, 10);
@@ -120,9 +94,6 @@ export default function ProximosEventosSection() {
       .slice(0, MAX_EVENTOS);
   }, [eventos]);
 
-  // Enquanto carrega ou se não há nenhum evento próximo publicado, a seção
-  // simplesmente não aparece na home — evita um bloco vazio/"em breve" antes
-  // de a organização começar a cadastrar a programação de verdade.
   if (!proximos || proximos.length === 0) return null;
 
   return (

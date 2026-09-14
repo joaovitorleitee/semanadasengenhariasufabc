@@ -1,80 +1,152 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, MapPin, ExternalLink } from "lucide-react"; // Ícones usados no card de data/local e no CTA de inscrição
+import { Calendar, MapPin, ExternalLink } from "lucide-react";
 import { BRAND, INSCRICAO_URL } from "@/lib/brand";
-import { DEFAULT_CONTENT } from "@/lib/brand";
 
-// ============================================================================
-// Hero.js — Seção de destaque no topo da página inicial (título, chamada
-// para ação e um cartão com data/local do evento).
-// Recebe "content" (do Supabase, com fallback em DEFAULT_CONTENT) via prop.
-//
-// MODO ESCURO: o fundo desta seção é um gradiente fixo entre
-// BRAND.greenDark e BRAND.green (cores que NÃO mudam entre os temas — ver
-// brand.js), com texto branco/verde-claro. Por isso a seção já nasce
-// "escura" nos dois temas e nenhuma cor aqui precisou virar variável
-// adaptável: o contraste permanece correto independente do tema escolhido.
-// ============================================================================
 export default function Hero({ content }) {
-  const c = content.hero; // Atalho para o objeto de conteúdo do Hero
+  const c = content.hero;
 
   return (
-  <section style={{ background: `linear-gradient(180deg, ${BRAND.greenDark} 0\%,${BRAND.green} 50%, transparent 100%)`, color: "#fff" }}>
+    <section
+      style={{
+        position: "relative",
+        /* Gradiente principal mantendo a mescla perfeita com o corpo do site */
+        background: BRAND.green,
+        color: "#fff",
+        overflow: "hidden",
+      }}
+    >
+      {/* Container Dinâmico da Malha Mesh */}
+      <div className="mesh-container">
+        <div className="mesh-blob blob-1" />
+        <div className="mesh-blob blob-2" />
+        <div className="mesh-blob blob-3" />
+        <div className="mesh-blob blob-4" />
+      </div>
 
-      {/* Grade de 2 colunas: texto/CTA à esquerda, card de data/local à
-          direita. Em telas estreitas vira 1 coluna (ver media query abaixo). */}
-      <div style={{ maxWidth: 1180, margin: "0 auto", padding: "70px 20px 60px", display: "grid", gridTemplateColumns: "1.2fr .8fr", gap: 40, alignItems: "center", height: 500 }} className="hero-grid">
-
-        {/* --- Coluna esquerda: selo, título, subtítulo e botões --- */}
+      {/* Conteúdo Principal */}
+      <div
+        className="hero-grid"
+        style={{
+          position: "relative",
+          zIndex: 2,
+          maxWidth: 1180,
+          margin: "0 auto",
+          padding: "50px 20px 80px",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+          gap: 32,
+          alignItems: "center",
+        }}
+      >
+        {/* Coluna Esquerda: Textos e Botões */}
         <div>
-          {/* Selo pequeno acima do título (ex: "UFABC · 2026") */}
-          <span style={{ fontFamily: "var(--font-league-spartan), sans-serif", fontWeight: 800, color: BRAND.yellow, fontSize: 13, letterSpacing: ".08em" }}>{c.badge}</span>
-          {/* Título principal — fontSize usa clamp() para ser responsivo:
-              nunca menor que 34px, nunca maior que 54px, escalando com a
-              largura da tela (5vw) entre esses limites. */}
-          <h1 style={{ fontFamily: "var(--font-league-spartan), sans-serif", fontWeight: 800, fontSize: "clamp(34px, 5vw, 54px)", lineHeight: 1.08, margin: "10px 0 18px" }}>
+          <span
+            style={{
+              fontFamily: "var(--font-league-spartan), sans-serif",
+              fontWeight: 800,
+              color: BRAND.yellow,
+              fontSize: 13,
+              letterSpacing: ".08em",
+            }}
+          >
+            {c.badge}
+          </span>
+
+          <h1
+            style={{
+              fontFamily: "var(--font-league-spartan), sans-serif",
+              fontWeight: 800,
+              fontSize: "clamp(32px, 5vw, 54px)",
+              lineHeight: 1.08,
+              margin: "10px 0 18px",
+            }}
+          >
             {c.title}
           </h1>
-          <p style={{ fontSize: 17, color: "#DCEFE2", maxWidth: 560, lineHeight: 1.6 }}>{c.subtitle}</p>
 
-          {/* Botões de ação: "Inscreva-se" primeiro (o mais chamativo —
-              tem um leve brilho pulsante, ver <style> no fim do arquivo,
-              pois é a ação que mais importa agora), depois o preenchido
-              (amarelo sólido) e o contornado (transparente com borda
-              branca semitransparente). */}
-          <div style={{ display: "flex", gap: 12, marginTop: 28, flexWrap: "wrap" }}>
+          <p
+            style={{
+              fontSize: 17,
+              color: "#DCEFE2",
+              maxWidth: 560,
+              lineHeight: 1.6,
+            }}
+          >
+            {c.subtitle}
+          </p>
+
+          {/* Botões */}
+          <div
+            style={{
+              display: "flex",
+              gap: 12,
+              marginTop: 28,
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
             <Link
-              href={INSCRICAO_URL} target="_blank" rel="noopener noreferrer"
+              href={INSCRICAO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-hover btn-inscreva-pulse"
-              style={{ display: "flex", alignItems: "center", gap: 8, background: BRAND.yellow, color: BRAND.greenDark, border: "none", padding: "13px 26px", borderRadius: 6, fontWeight: 800, fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 20, textDecoration: "none", boxShadow: "0px 4px 15px rgba(234, 179, 8, 0.4)", transition: "all 0.2s ease-in-out", }}
-    
-
+              style={{
+                background: BRAND.yellow,
+                color: BRAND.greenDark,
+                border: "none",
+                padding: "12px 22px",
+                borderRadius: 6,
+                fontWeight: 800,
+                fontFamily: "var(--font-league-spartan), sans-serif",
+                fontSize: 18,
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                transition: "all 0.2s ease-in-out",
+              }}
             >
               Inscreva-se <ExternalLink size={16} />
             </Link>
-            <Link href="/engenharias" className="btn-hover" >
+
+            <Link href="/engenharias" className="btn-hover btn-secondary">
               {c.ctaPrimary}
             </Link>
-            <Link href="/noticias" className="btn-hover" >
+
+            <Link href="/noticias" className="btn-hover btn-secondary">
               {c.ctaSecondary}
             </Link>
           </div>
         </div>
 
-        {/* --- Coluna direita: card "vidro fosco" com data e local ---
-            rgba(255,255,255,.08) cria o efeito de vidro semitransparente
-            sobre o gradiente verde de fundo. */}
-        <div style={{ background: "rgba(255,255,255,.08)", border: "1px solid rgba(255,255,255,.18)", borderRadius: 12, padding: 26 }}>
-          {/* Linha "Data" */}
-          <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 18 }}>
+        {/* Coluna Direita: Card de Data/Local com Glassmorphism */}
+        <div
+          style={{
+            background: "rgba(255, 255, 255, 0.08)",
+            border: "1px solid rgba(255, 255, 255, 0.18)",
+            backdropFilter: "blur(14px)",
+            borderRadius: 12,
+            padding: 26,
+            boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              gap: 12,
+              alignItems: "flex-start",
+              marginBottom: 18,
+            }}
+          >
             <Calendar size={20} color={BRAND.yellow} />
             <div>
               <strong style={{ display: "block", fontSize: 14 }}>Data</strong>
               <span style={{ fontSize: 14, color: "#CFE6D7" }}>{c.date}</span>
             </div>
           </div>
-          {/* Linha "Local" */}
+
           <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
             <MapPin size={20} color={BRAND.yellow} />
             <div>
@@ -85,35 +157,127 @@ export default function Hero({ content }) {
         </div>
       </div>
 
-      {/* Em telas estreitas (até 860px), a grade de 2 colunas vira 1
-          coluna só, empilhando texto e card de data/local. */}
-      <style>{`@media (max-width: 860px){ .hero-grid{ grid-template-columns: 1fr !important; } }`}</style>
-
-      {/* Efeito de hover dos botões: escurece, levanta e adiciona sombra
-          suave — mesmo padrão usado em outros botões do site. */}
+      {/* Estilos CSS da Malha Mesh Dinâmica Corrigidos */}
       <style>{`
-          .btn-hover:hover {
-          filter: brightness(0.95); /* Escurece levemente o botão */
-          transform: translateY(-2px); /* Eleva o botão suavemente */
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Adiciona uma sombra leve */
-          transition: transform 0.25s ease-in-out;
+        .mesh-container {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+          z-index: 1;
         }
-      `}</style>
 
-      {/* Brilho pulsante do botão "Inscreva-se": um halo amarelo que cresce
-          e desaparece em loop, pra chamar mais atenção que os outros dois
-          botões (que ficam parados). Só afeta esse botão (.btn-inscreva-pulse),
-          os demais continuam exatamente como eram. */}
-      <style>{`
+        .mesh-blob {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(60px);
+          opacity: 0.85;
+          mix-blend-mode: screen;
+        }
+
+        /* Blob 1: Amarelo Vivaz topo/esquerda */
+        .blob-1 {
+          top: -10%;
+          left: 10%;
+          width: 380px;
+          height: 380px;
+          background: radial-gradient(circle, #FFD300 0%, transparent 70%);
+          animation: float1 3.5s ease-in-out infinite alternate;
+        }
+
+        /* Blob 2: Verde Neon centro/direita */
+        .blob-2 {
+          top: 20%;
+          right: -5%;
+          width: 450px;
+          height: 450px;
+          background: radial-gradient(circle, #009B01 0%, transparent 70%);
+          animation: float2 4s ease-in-out infinite alternate;
+        }
+
+        /* Blob 3: Verde Esmeralda no fundo */
+        .blob-3 {
+          bottom: -10%;
+          left: 25%;
+          width: 500px;
+          height: 500px;
+          background: radial-gradient(circle, #009B01 0%, transparent 70%);
+          animation: float3 5s ease-in-out infinite alternate;
+        }
+
+        /* Blob 4: Amarelo Secundário */
+        .blob-4 {
+          top: 40%;
+          left: -5%;
+          width: 300px;
+          height: 300px;
+          background: radial-gradient(circle, #FFD300 0%, transparent 70%);
+          animation: float4 3.8s ease-in-out infinite alternate;
+        }
+
+        /* Keyframes de Movimento Dinâmico */
+        @keyframes float1 {
+          0% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(120px, 60px) scale(1.25); }
+          100% { transform: translate(-40px, 90px) scale(0.9); }
+        }
+
+        @keyframes float2 {
+          0% { transform: translate(0, 0) scale(1.1); }
+          50% { transform: translate(-140px, -50px) scale(0.85); }
+          100% { transform: translate(-60px, 80px) scale(1.2); }
+        }
+
+        @keyframes float3 {
+          0% { transform: translate(0, 0) scale(0.9); }
+          50% { transform: translate(-90px, -80px) scale(1.3); }
+          100% { transform: translate(70px, -40px) scale(1); }
+        }
+
+        @keyframes float4 {
+          0% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(100px, -60px) scale(1.15); }
+          100% { transform: translate(40px, 50px) scale(0.85); }
+        }
+
+        .btn-secondary {
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          background: rgba(255, 255, 255, 0.08);
+          color: #ffffff;
+          padding: 12px 20px;
+          border-radius: 6px;
+          font-family: var(--font-league-spartan), sans-serif;
+          font-weight: 700;
+          font-size: 16px;
+          text-decoration: none;
+          backdrop-filter: blur(8px);
+          display: inline-flex;
+          align-items: center;
+          transition: all 0.2s ease;
+        }
+
+        .btn-hover:hover {
+          filter: brightness(1.1);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
         .btn-inscreva-pulse {
           animation: pulseInscreva 2.2s ease-in-out infinite;
         }
+
         @keyframes pulseInscreva {
           0%, 100% { box-shadow: 0 0 0 0 rgba(255, 211, 0, 0.55); }
           50% { box-shadow: 0 0 0 10px rgba(255, 211, 0, 0); }
         }
+
+        @media (max-width: 860px) {
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            padding-bottom: 60px !important;
+          }
+        }
       `}</style>
     </section>
   );
-
 }

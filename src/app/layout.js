@@ -53,7 +53,8 @@ export default function RootLayout({ children }) {
   return (
     // As classes com .variable disponibilizam as CSS variables das fontes
     // (--font-metropolis, --font-league-spartan) para todo o site.
-    <html lang="pt-BR" className={`${metropolis.variable} ${leagueSpartan.variable}`}>
+
+    <html lang="pt-BR" suppressHydrationWarning className={`${metropolis.variable} ${leagueSpartan.variable}`}>
       <head>
         {/* Script "anti-flash de tema": roda ANTES da página ser pintada
             na tela (por isso fica no <head>, fora do fluxo normal do
