@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { Instagram, Linkedin, ExternalLink, Lock } from "lucide-react";
 import { BRAND, INSCRICAO_URL } from "@/lib/brand";
+import { useSponsors } from "@/lib/useSponsors";
 
 export default function SiteFooter({ content }) {
   const c = content.footer;
-
+  const { sponsors } = useSponsors({ onlyActive: true });
+  
   return (
     <footer style={{ background: BRAND.greenDark, color: "#fff", marginTop: 60 }}>
       {/* Grade principal com 3 colunas organizadas */}
@@ -116,6 +118,58 @@ export default function SiteFooter({ content }) {
           <p style={{ color: "#CFE6D7", fontSize: 14, margin: "4px 0", overflowWrap: "anywhere" }}>{c.address}</p>
         </div>
       </div>
+      
+      {/* ======================================================= */}
+      {/* ↓↓↓ NOVO: bloco de ícones dos patrocinadores ↓↓↓          */}
+      {/* Inserido AQUI, entre a grade de 3 colunas e o copyright  */}
+      {/* Nada abaixo foi removido — só empurrado pra depois dele  */}
+      {/* ======================================================= */}
+      {sponsors && sponsors.length > 0 && (
+  <div style={{ borderTop: "1px solid rgba(255,255,255,.12)" }}>
+    <div style={{ maxWidth: 1180, margin: "0 auto", padding: "24px 20px", textAlign: "center" }}>
+      <strong
+        style={{
+          display: "block",
+          marginBottom: 16,
+          fontSize: 13,
+          color: BRAND.yellow,
+          letterSpacing: ".04em",
+          textTransform: "uppercase",
+        }}
+      >
+        Patrocinadores
+      </strong>
+      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: 16 }}>
+        {sponsors.map((s) => (
+          <Link
+            key={s.id}
+            href={s.website_url || "/patrocinadores"}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={s.name}
+            style={{
+              background: "#fff",
+              borderRadius: 8,
+              padding: "10px 16px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: 60,
+            }}
+          >
+            <img
+              src={s.logo_url}
+              alt={s.name}
+              style={{ height: 36, maxWidth: 110, objectFit: "contain" }}
+            />
+          </Link>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+      {/* ↑↑↑ FIM DO BLOCO NOVO ↑↑↑ */}
+
 
       {/* --- Linha de rodapé inferior: Copyright + Link Discreto para Admin --- */}
       <div style={{ borderTop: "1px solid rgba(255,255,255,.12)" }}>

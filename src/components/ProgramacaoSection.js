@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState, useEffect } from "react";
 import { CalendarDays, Clock, MapPin, User, Layers, Users, ExternalLink, LayoutGrid } from "lucide-react";
 import { BRAND, EVENT_CATEGORY_COLORS, EVENT_LEVELS, fmtTime, fmtDateRange, fmtDateShort } from "@/lib/brand";
@@ -124,7 +125,29 @@ function EventCard({ ev, sponsor, engenhariaLabel }) {
             Inscreva-se <ExternalLink size={13} />
           </a>
         )}
-      </div>
+        {/* NOVO: botão de patrocinadores — sempre visível, independente de inscrição */}
+        <Link
+          href="/patrocinadores"
+          style={{
+            marginTop: 4,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+            background: "transparent",
+            border: `1px solid ${BRAND.green}`,
+            color: BRAND.green,
+            borderRadius: 6,
+            padding: "9px 12px",
+            fontSize: 13,
+            fontWeight: 700,
+            textDecoration: "none",
+          }}
+        >
+          Conheça nossos patrocinadores
+        </Link>        
+        
+      </div>      
       {/* Efeito de hover do cartão: sombra esverdeada + leve elevação */}
       <style>{`.evento-card:hover{ box-shadow: 0 10px 24px rgba(0,89,59,.10); transform: translateY(-2px); }`}</style>
     </div>

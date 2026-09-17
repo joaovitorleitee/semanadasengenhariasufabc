@@ -70,6 +70,29 @@ function EventoMiniCard({ ev }) {
           Inscreva-se <ExternalLink size={12} />
         </a>
       )}
+      
+      {/* NOVO: botão de patrocinadores — aparece em todo card, mesmo sem inscrição */}
+      <Link
+        href="/patrocinadores"
+        style={{
+          marginTop: ev.link_inscricao ? 0 : "auto",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 6,
+          background: "transparent",
+          border: `1px solid ${BRAND.green}`,
+          color: BRAND.green,
+          borderRadius: 6,
+          padding: "8px 12px",
+          fontSize: 12.5,
+          fontWeight: 700,
+          textDecoration: "none",
+        }}
+      >
+        Conheça nossos patrocinadores
+      </Link>
+
 
       <style>{`.proximo-evento-card:hover{ box-shadow: 0 10px 22px rgba(0,89,59,.10); transform: translateY(-2px); }`}</style>
     </div>
