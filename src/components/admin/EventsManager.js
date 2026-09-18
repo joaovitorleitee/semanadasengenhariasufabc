@@ -50,28 +50,30 @@ export default function EventsManager({ engenharias, notify }) {
 
   const handleSave = async (form) => {
     setSaving(true);
-    let ok;
+    let res;
     if (editing === "new") {
-      const res = await createEvento(form);
-      ok = res.ok;
-      if (ok) notify(`Evento ${form.status === "published" ? "publicado" : "salvo como rascunho"}.`);
+      res = await createEvento(form);
+      if (res.ok) notify(`Evento ${form.status === "published" ? "publicado" : "salvo como rascunho"}.`);
     } else {
-      ok = await updateEvento(editing.id, form);
-      if (ok) notify(`Evento atualizado${form.status === "published" ? " e publicado" : ""}.`);
+      res = await updateEvento(editing.id, form);
+      if (res.ok) notify(`Evento atualizado${form.status === "published" ? " e publicado" : ""}.`);
     }
     setSaving(false);
-    if (ok) setEditing(null);
+    if (res.ok) setEditing(null);
+    else notify(res.message || "Falha ao salvar o evento.", "error");
   };
 
   const togglePublish = async (ev) => {
-    const ok = await updateEvento(ev.id, { status: ev.status === "published" ? "draft" : "published" });
-    if (ok) notify(ev.status === "published" ? "Evento despublicado." : "Evento publicado.");
+    const res = await updateEvento(ev.id, { status: ev.status === "published" ? "draft" : "published" });
+    if (res.ok) notify(ev.status === "published" ? "Evento despublicado." : "Evento publicado.");
+    else notify(res.message || "Falha ao atualizar o evento.", "error");
   };
 
   const confirmDelete = async (id) => {
     const ok = await deleteEvento(id);
     setConfirmId(null);
     if (ok) notify("Evento excluído.", "success");
+    else notify("Falha ao excluir o evento.", "error");
   };
 
   // Gera e baixa um arquivo .txt com o título de TODAS as programações

@@ -30,32 +30,33 @@ export function useEventos({ onlyPublished = false } = {}) {
   useEffect(() => { load(); }, [load]);
 
   const createEvento = async (form) => {
-    const { data, error: err } = await supabase
-      .from("eventos")
-      .insert(form)
-      .select()
-      .single();
+    // Antes, isso encadeava .select().single() na mesma chamada para já
+    // devolver a linha criada. Só que, se essa releitura falhasse por
+    // qualquer motivo (RLS, timing etc.), o Supabase retornava erro AQUI
+    // mesmo o evento já tendo sido gravado com sucesso — daí o evento
+    // "salvava" no banco mas a tela de admin achava que tinha falhado
+    // (não fechava, não avisava nada). Agora: o resultado da gravação em
+    // si é o que decide sucesso/erro; a releitura da lista é uma etapa à
+    // parte (load), que não tem esse ponto de falha.
+    const { error: err } = await supabase.from("eventos").insert(form);
     if (err) {
-      setError("Falha ao criar o evento.");
-      return { ok: false };
+      const msg = err.message || "Falha ao criar o evento.";
+      setError(msg);
+      return { ok: false, message: msg };
     }
-    setEventos((e) => [...(e || []), data]);
-    return { ok: true, evento: data };
+    await load();
+    return { ok: true };
   };
 
   const updateEvento = async (id, form) => {
-    const { data, error: err } = await supabase
-      .from("eventos")
-      .update(form)
-      .eq("id", id)
-      .select()
-      .single();
+    const { error: err } = await supabase.from("eventos").update(form).eq("id", id);
     if (err) {
-      setError("Falha ao salvar o evento.");
-      return false;
+      const msg = err.message || "Falha ao salvar o evento.";
+      setError(msg);
+      return { ok: false, message: msg };
     }
-    setEventos((e) => (e || []).map((ev) => (ev.id === id ? data : ev)));
-    return true;
+    await load();
+    return { ok: true };
   };
 
   const deleteEvento = async (id) => {
