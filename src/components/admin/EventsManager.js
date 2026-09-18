@@ -32,12 +32,14 @@ export default function EventsManager({ engenharias, notify }) {
         filtro === "geral" ? !evento.engenharia_n :
         String(evento.engenharia_n) === String(filtro);
 
-      // 2. Busca pelas palavras 'pós', 'pos' ou 'pós-graduação' no título, categoria ou descrição
+      // 2. Busca por "carlos chagas" no título, categoria ou descrição —
+      // é assim que o evento fica marcado como "Auditório Carlos Chagas"
+      // (o formulário grava isso dentro da categoria, ver EventForm.js).
       const textoCompleto = `${evento.titulo || ''} ${evento.categoria || ''} ${evento.descricao || ''}`.toLowerCase();
       
-      const ehPos = textoCompleto.includes("pós") || textoCompleto.includes("pos");
+      const ehCarlosChagas = textoCompleto.includes("carlos chagas");
 
-      const nivelDoEvento = evento.nivel ? evento.nivel : (ehPos ? "Pós-Graduação" : "Graduação");
+      const nivelDoEvento = evento.nivel ? evento.nivel : (ehCarlosChagas ? "Auditório Carlos Chagas" : "Graduação");
 
       const bateNivel =
         filtroNivel === "todos" || nivelDoEvento === filtroNivel;

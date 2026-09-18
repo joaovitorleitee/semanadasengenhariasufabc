@@ -16,14 +16,19 @@ export default function Maps() {
     <>
       <h3 style={{ textAlign: 'center', fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 30, color: BRAND.heading, margin: "8px 0 26px" }}>Localização</h3>
       <p style={{ textAlign: 'center', fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 25, color: BRAND.heading, margin: "8px 0 26px"}}>UFABC - Campus Santo André </p>
-      <p style={{ textAlign: 'center', fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 20, color: BRAND.heading, margin: "8px 0 26px"}}>Av. dos Estados, 5001 </p>
+      <p style={{ textAlign: 'center', fontFamily: "var(--font-league-spartan), sans-serif", fontSize: 20, color: BRAND.heading, margin: "8px 0 26px"}}>R. Abolição, S/N - Vila São Pedro, Santo André - SP, 09210-180</p>
 
       {/* Centraliza o mapa horizontalmente */}
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-        {/* Mapa do Google Maps incorporado via iframe, apontando para as
-            coordenadas do campus Santo André da UFABC. */}
+        {/* Mapa do Google Maps incorporado via iframe. Usa o formato
+            "?q=ENDEREÇO&output=embed" (em vez do formato "pb=..." anterior,
+            que apontava fixo pras coordenadas de um pino específico do
+            Google): assim o Google geocodifica o endereço em texto acima
+            diretamente, então texto e mapa nunca ficam desencontrados —
+            se o endereço mudar de novo no futuro, basta trocar a string
+            abaixo, sem precisar gerar um novo link "pb=" no Google Maps. */}
         <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d58479.61457264557!2d-46.576052249467566!3d-23.64103371850036!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce4297b7880d57%3A0xaeddba2a824280b6!2sUFABC%20-%20Universidade%20Federal%20do%20ABC!5e0!3m2!1spt-BR!2sbr!4v1788548634181!5m2!1spt-BR!2sbr"
+          src="https://www.google.com/maps?q=R.%20Aboli%C3%A7%C3%A3o%2C%20S/N%20-%20Vila%20Sao%20Pedro%2C%20Santo%20Andr%C3%A9%20-%20SP%2C%2009210-180&output=embed"
           width="600"
           height="450"
           // Borda decorativa verde-escura fixa ao redor do mapa — o

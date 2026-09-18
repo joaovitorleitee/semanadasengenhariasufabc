@@ -45,11 +45,14 @@ export default function EventForm({ initial, engenharias = [], sponsors = [], on
    const submit = () => {
     const { nivel, ...dadosEventos } = form;
     let categoriaAjustada = form.categoria;
-  if (nivel === "Pós-Graduação" && !categoriaAjustada.includes("Pós-Graduação")) {
-    categoriaAjustada = `${form.categoria} (Pós-Graduação)`;
+  if (nivel === "Auditório Carlos Chagas" && !categoriaAjustada.includes("Auditório Carlos Chagas")) {
+    categoriaAjustada = `${form.categoria} (Auditório Carlos Chagas)`;
   }
     onSave({
       ...dadosEventos,
+    // Sem isso, "categoriaAjustada" era calculada mas nunca usada — a
+    // marcação de "Auditório Carlos Chagas" nunca ia pro banco de fato.
+    categoria: categoriaAjustada,
     engenharia_n: form.engenharia_n || null,
     patrocinador_id: form.patrocinador_id || null,
     data_fim: form.data_fim || form.data_inicio || null,
@@ -98,7 +101,7 @@ export default function EventForm({ initial, engenharias = [], sponsors = [], on
     <label style={fieldLabel}>Nível / Público</label>
     <select value={form.nivel || "Graduação"} onChange={(e) => set("nivel", e.target.value)} style={fieldInput}>
       <option value="Graduação">Graduação</option>
-      <option value="Pós-Graduação">Pós-Graduação</option>
+      <option value="Auditório Carlos Chagas">Auditório Carlos Chagas</option>
       <option value="Geral">Geral (Todos)</option>
     </select>
   </div>
