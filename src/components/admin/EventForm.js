@@ -44,15 +44,16 @@ export default function EventForm({ initial, engenharias = [], sponsors = [], on
 
    const submit = () => {
     const { nivel, ...dadosEventos } = form;
-    let categoriaAjustada = form.categoria;
-  if (nivel === "Auditório Carlos Chagas" && !categoriaAjustada.includes("Auditório Carlos Chagas")) {
-    categoriaAjustada = `${form.categoria} (Auditório Carlos Chagas)`;
-  }
+    // "categoria" tem uma restrição no banco (check constraint) que só
+    // aceita um conjunto fixo de valores (Palestra, Workshop etc.) — por
+    // isso NÃO pode receber texto extra. A marcação de "Auditório Carlos
+    // Chagas" vai para o campo "local" (texto livre), não para "categoria".
+    let localAjustado = form.local?.trim() || "";
+    if (nivel === "Auditório Carlos Chagas" && !localAjustado.toLowerCase().includes("carlos chagas")) {
+      localAjustado = localAjustado ? `${localAjustado} — Auditório Carlos Chagas` : "Auditório Carlos Chagas";
+    }
     onSave({
       ...dadosEventos,
-    // Sem isso, "categoriaAjustada" era calculada mas nunca usada — a
-    // marcação de "Auditório Carlos Chagas" nunca ia pro banco de fato.
-    categoria: categoriaAjustada,
     engenharia_n: form.engenharia_n || null,
     patrocinador_id: form.patrocinador_id || null,
     data_fim: form.data_fim || form.data_inicio || null,
@@ -60,7 +61,7 @@ export default function EventForm({ initial, engenharias = [], sponsors = [], on
     link_inscricao: form.link_inscricao?.trim() || null,
     imagem_url: form.imagem_url?.trim() || null,
     palestrante: form.palestrante?.trim() || null,
-    local: form.local?.trim() || null,
+    local: localAjustado || null,
     });
   };
 

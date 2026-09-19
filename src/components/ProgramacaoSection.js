@@ -162,11 +162,11 @@ function EventCard({ ev, sponsor, engenhariaLabel }) {
 
 // Decide se um evento bate com o nível selecionado no filtro. Se o evento
 // não tiver o campo "nivel" preenchido (compatível com eventos cadastrados
-// antes desse campo existir), tenta adivinhar pelo texto do título/
+// antes desse campo existir), tenta adivinhar pelo texto do título/local/
 // categoria/descrição contendo "carlos chagas", assumindo Graduação como padrão.
 function bateNivel(e, filtroNivel) {
   if (filtroNivel === "todos") return true;
-  const textoCompleto = `${e.titulo || ""} ${e.categoria || ""} ${e.descricao || ""}`.toLowerCase();
+  const textoCompleto = `${e.titulo || ""} ${e.local || ""} ${e.categoria || ""} ${e.descricao || ""}`.toLowerCase();
   const ehCarlosChagas = textoCompleto.includes("carlos chagas");
   const nivelDoEvento = e.nivel ? e.nivel : (ehCarlosChagas ? "Auditório Carlos Chagas" : "Graduação");
   return nivelDoEvento === filtroNivel;

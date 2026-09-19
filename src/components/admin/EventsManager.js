@@ -32,10 +32,11 @@ export default function EventsManager({ engenharias, notify }) {
         filtro === "geral" ? !evento.engenharia_n :
         String(evento.engenharia_n) === String(filtro);
 
-      // 2. Busca por "carlos chagas" no título, categoria ou descrição —
-      // é assim que o evento fica marcado como "Auditório Carlos Chagas"
-      // (o formulário grava isso dentro da categoria, ver EventForm.js).
-      const textoCompleto = `${evento.titulo || ''} ${evento.categoria || ''} ${evento.descricao || ''}`.toLowerCase();
+      // 2. Busca por "carlos chagas" no título, local, categoria ou
+      // descrição — é assim que o evento fica marcado como "Auditório
+      // Carlos Chagas" (o formulário grava isso dentro do campo "local",
+      // ver EventForm.js — "categoria" não pode, tem check constraint no banco).
+      const textoCompleto = `${evento.titulo || ''} ${evento.local || ''} ${evento.categoria || ''} ${evento.descricao || ''}`.toLowerCase();
       
       const ehCarlosChagas = textoCompleto.includes("carlos chagas");
 
