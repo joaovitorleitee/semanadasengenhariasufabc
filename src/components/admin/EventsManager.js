@@ -2,12 +2,31 @@
 
 import { useMemo, useState } from "react";
 import { Plus, Pencil, Trash2, Eye, EyeOff, CalendarDays, Download } from "lucide-react";
-import { BRAND, fmtTime, fmtDateRange, EVENT_LEVELS } from "@/lib/brand";
+import { BRAND, fmtTime, fmtDateRange, fmtDateShort, EVENT_LEVELS } from "@/lib/brand";
 import { useEventos } from "@/lib/useEventos";
 import { useSponsors } from "@/lib/useSponsors";
 import StatusPill from "../StatusPill";
 import EventForm from "./EventForm";
 import { iconBtn } from "./adminStyles";
+
+// Expande um evento em uma lista de datas "AAAA-MM-DD", uma para cada dia
+// entre data_inicio e data_fim (inclusive). Mesma lógica usada na página
+// pública de Programação (ProgramacaoSection.js), pra manter os dois
+// filtros por dia consistentes entre si.
+function expandirDatas(ev) {
+  if (!ev.data_inicio) return [];
+  const fim = ev.data_fim || ev.data_inicio;
+  const datas = [];
+  let cursor = new Date(`${ev.data_inicio}T00:00:00`);
+  const dataFim = new Date(`${fim}T00:00:00`);
+  let guarda = 0;
+  while (cursor <= dataFim && guarda < 31) {
+    datas.push(cursor.toISOString().slice(0, 10));
+    cursor.setDate(cursor.getDate() + 1);
+    guarda++;
+  }
+  return datas;
+}
 
 export default function EventsManager({ engenharias, notify }) {
   const { eventos, error, createEvento, updateEvento, deleteEvento } = useEventos({ onlyPublished: false });
@@ -17,11 +36,21 @@ export default function EventsManager({ engenharias, notify }) {
   const [confirmId, setConfirmId] = useState(null);
   const [filtro, setFiltro] = useState("todos"); // 'todos' | engenharia_n | 'geral'
   const [filtroNivel, setFiltroNivel] = useState("todos");
+  const [filtroDia, setFiltroDia] = useState("todos"); // 'todos' | 'AAAA-MM-DD'
 
   const nomeCurso = (n) => engenharias.find((e) => e.n === n)?.nome || n;
   const nomeSponsor = (id) => (sponsors || []).find((s) => s.id === id)?.name;
- 
- 
+
+  // Lista de dias (com pelo menos um evento cadastrado, de qualquer status)
+  // em ordem cronológica — vira as abas de dia abaixo. Considera todos os
+  // eventos (não só os já filtrados por engenharia/nível), pra nenhuma data
+  // sumir da lista só porque outro filtro está ativo.
+  const diasComEventos = useMemo(() => {
+    const set = new Set();
+    (eventos || []).forEach((e) => expandirDatas(e).forEach((d) => set.add(d)));
+    return Array.from(set).sort();
+  }, [eventos]);
+
   const filtrados = useMemo(() => {
     if (!eventos) return [];
 
@@ -36,9 +65,13 @@ export default function EventsManager({ engenharias, notify }) {
       const bateNivel =
         filtroNivel === "todos" || (evento.nivel || "Graduação") === filtroNivel;
 
-      return bateEngenharia && bateNivel;
+      // 3. Valida Dia
+      const bateDia =
+        filtroDia === "todos" || expandirDatas(evento).includes(filtroDia);
+
+      return bateEngenharia && bateNivel && bateDia;
     });
-  }, [eventos, filtro, filtroNivel]);
+  }, [eventos, filtro, filtroNivel, filtroDia]);
 
   const handleSave = async (form) => {
     setSaving(true);
@@ -151,7 +184,24 @@ export default function EventsManager({ engenharias, notify }) {
       {t.label}
     </button>
   ))}
-</div> 
+</div>
+
+      {diasComEventos.length > 0 && (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
+          {[{ id: "todos", label: "Todos os dias" }, ...diasComEventos.map((d) => ({ id: d, label: fmtDateShort(d) }))].map((t) => (
+            <button
+              key={t.id} onClick={() => setFiltroDia(t.id)}
+              style={{
+                padding: "7px 13px", borderRadius: 999, border: `1.5px solid ${filtroDia === t.id ? BRAND.green : BRAND.border}`,
+                background: filtroDia === t.id ? BRAND.green : "#fff", color: filtroDia === t.id ? "#fff" : "#5c655e",
+                fontWeight: 700, fontSize: 12.5, cursor: "pointer", textTransform: "capitalize",
+              }}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {eventos === null ? (
         <p style={{ color: "#5c655e" }}>Carregando…</p>
