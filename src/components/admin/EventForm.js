@@ -24,12 +24,25 @@ const emptyForm = {
   status: "draft",
 };
 
+// "nivel" não é uma coluna de verdade no banco — fica guardado como texto
+// dentro de "local" (ver submit() abaixo). Por isso, ao editar um evento já
+// existente, precisamos adivinhar o nível pelo texto salvo em vez de ler um
+// campo "nivel" que nunca existiu na linha vinda do Supabase — senão o menu
+// sempre volta pro valor padrão ("Graduação"), mesmo em eventos do Carlos Chagas.
+function inferirNivel(ev) {
+  if (!ev) return EVENT_LEVELS[0] || "Graduação";
+  const texto = `${ev.titulo || ""} ${ev.local || ""} ${ev.categoria || ""} ${ev.descricao || ""}`.toLowerCase();
+  if (texto.includes("carlos chagas")) return "Auditório Carlos Chagas";
+  return EVENT_LEVELS[0] || "Graduação";
+}
+
 export default function EventForm({ initial, engenharias = [], sponsors = [], onCancel, onSave, saving }) {
   const [form, setForm] = useState(
     initial
       ? {
           ...emptyForm,
           ...initial,
+          nivel: inferirNivel(initial),
           engenharia_n: initial.engenharia_n || "",
           patrocinador_id: initial.patrocinador_id || "",
           data_fim: initial.data_fim || "",
