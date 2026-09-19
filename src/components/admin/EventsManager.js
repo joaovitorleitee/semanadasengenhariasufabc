@@ -22,15 +22,6 @@ export default function EventsManager({ engenharias, notify }) {
   const nomeSponsor = (id) => (sponsors || []).find((s) => s.id === id)?.name;
  
  
-  // "nivel" não existe como coluna no banco — é guardado como texto dentro
-  // de "local" (ver EventForm.js). Por isso, tanto pra filtrar quanto pra
-  // exibir na lista, o nível é sempre recalculado a partir do texto salvo,
-  // nunca lido de uma coluna "nivel" (que não existe na linha do Supabase).
-  const nivelDoEvento = (evento) => {
-    const textoCompleto = `${evento.titulo || ''} ${evento.local || ''} ${evento.categoria || ''} ${evento.descricao || ''}`.toLowerCase();
-    return textoCompleto.includes("carlos chagas") ? "Auditório Carlos Chagas" : "Graduação";
-  };
-
   const filtrados = useMemo(() => {
     if (!eventos) return [];
 
@@ -41,9 +32,9 @@ export default function EventsManager({ engenharias, notify }) {
         filtro === "geral" ? !evento.engenharia_n :
         String(evento.engenharia_n) === String(filtro);
 
-      // 2. Valida Nível
+      // 2. Valida Nível — lê direto da coluna "nivel" do banco.
       const bateNivel =
-        filtroNivel === "todos" || nivelDoEvento(evento) === filtroNivel;
+        filtroNivel === "todos" || (evento.nivel || "Graduação") === filtroNivel;
 
       return bateEngenharia && bateNivel;
     });
@@ -184,7 +175,7 @@ export default function EventsManager({ engenharias, notify }) {
                 </div>
                 <span style={{ fontSize: 12.5, color: "#8a938c" }}>
                   {ev.categoria}
-                  {` · ${nivelDoEvento(ev)}`}
+                  {` · ${ev.nivel || "Graduação"}`}
                   {ev.engenharia_n ? ` · ${nomeCurso(ev.engenharia_n)}` : " · Geral"}
                   {ev.data_inicio ? ` · ${fmtDateRange(ev.data_inicio, ev.data_fim)}` : ""}
                   {ev.horario_inicio ? ` às ${fmtTime(ev.horario_inicio)}` : ""}

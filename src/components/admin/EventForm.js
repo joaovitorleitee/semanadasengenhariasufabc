@@ -24,16 +24,17 @@ const emptyForm = {
   status: "draft",
 };
 
-// "nivel" não é uma coluna de verdade no banco — fica guardado como texto
-// dentro de "local" (ver submit() abaixo). Por isso, ao editar um evento já
-// existente, precisamos adivinhar o nível pelo texto salvo em vez de ler um
-// campo "nivel" que nunca existiu na linha vinda do Supabase — senão o menu
-// sempre volta pro valor padrão ("Graduação"), mesmo em eventos do Carlos Chagas.
-function inferirNivel(ev) {
-  if (!ev) return EVENT_LEVELS[0] || "Graduação";
-  const texto = `${ev.titulo || ""} ${ev.local || ""} ${ev.categoria || ""} ${ev.descricao || ""}`.toLowerCase();
-  if (texto.includes("carlos chagas")) return "Auditório Carlos Chagas";
-  return EVENT_LEVELS[0] || "Graduação";
+// Se o evento foi salvo antes desta correção, o texto "Auditório Carlos
+// Chagas" pode ter ficado colado no campo "local" (era a forma de marcar
+// isso quando a gente pensava que a coluna "nivel" não existia no banco).
+// Ao abrir para editar, essa função limpa esse resíduo do "local" — agora
+// quem marca o nível é o próprio campo "nivel" (coluna de verdade no banco).
+function limparLocalAntigo(local) {
+  if (!local) return "";
+  return local
+    .replace(/\s*—\s*Auditório Carlos Chagas\s*$/i, "")
+    .replace(/^Auditório Carlos Chagas$/i, "")
+    .trim();
 }
 
 export default function EventForm({ initial, engenharias = [], sponsors = [], onCancel, onSave, saving }) {
@@ -42,7 +43,8 @@ export default function EventForm({ initial, engenharias = [], sponsors = [], on
       ? {
           ...emptyForm,
           ...initial,
-          nivel: inferirNivel(initial),
+          nivel: initial.nivel || EVENT_LEVELS[0] || "Graduação",
+          local: limparLocalAntigo(initial.local),
           engenharia_n: initial.engenharia_n || "",
           patrocinador_id: initial.patrocinador_id || "",
           data_fim: initial.data_fim || "",
@@ -56,17 +58,8 @@ export default function EventForm({ initial, engenharias = [], sponsors = [], on
   const valid = form.titulo.trim() && form.data_inicio && form.horario_inicio && form.horario_fim;
 
    const submit = () => {
-    const { nivel, ...dadosEventos } = form;
-    // "categoria" tem uma restrição no banco (check constraint) que só
-    // aceita um conjunto fixo de valores (Palestra, Workshop etc.) — por
-    // isso NÃO pode receber texto extra. A marcação de "Auditório Carlos
-    // Chagas" vai para o campo "local" (texto livre), não para "categoria".
-    let localAjustado = form.local?.trim() || "";
-    if (nivel === "Auditório Carlos Chagas" && !localAjustado.toLowerCase().includes("carlos chagas")) {
-      localAjustado = localAjustado ? `${localAjustado} — Auditório Carlos Chagas` : "Auditório Carlos Chagas";
-    }
     onSave({
-      ...dadosEventos,
+      ...form,
     engenharia_n: form.engenharia_n || null,
     patrocinador_id: form.patrocinador_id || null,
     data_fim: form.data_fim || form.data_inicio || null,
@@ -74,7 +67,7 @@ export default function EventForm({ initial, engenharias = [], sponsors = [], on
     link_inscricao: form.link_inscricao?.trim() || null,
     imagem_url: form.imagem_url?.trim() || null,
     palestrante: form.palestrante?.trim() || null,
-    local: localAjustado || null,
+    local: form.local?.trim() || null,
     });
   };
 

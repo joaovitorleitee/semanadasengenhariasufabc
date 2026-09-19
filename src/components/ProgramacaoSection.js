@@ -160,16 +160,12 @@ function EventCard({ ev, sponsor, engenhariaLabel }) {
 // não dependem de nada que more dentro dele.
 // ============================================================================
 
-// Decide se um evento bate com o nível selecionado no filtro. Se o evento
-// não tiver o campo "nivel" preenchido (compatível com eventos cadastrados
-// antes desse campo existir), tenta adivinhar pelo texto do título/local/
-// categoria/descrição contendo "carlos chagas", assumindo Graduação como padrão.
+// Decide se um evento bate com o nível selecionado no filtro, lendo direto
+// da coluna "nivel" do banco (fallback "Graduação" para eventos antigos
+// cadastrados antes desse campo existir de fato).
 function bateNivel(e, filtroNivel) {
   if (filtroNivel === "todos") return true;
-  const textoCompleto = `${e.titulo || ""} ${e.local || ""} ${e.categoria || ""} ${e.descricao || ""}`.toLowerCase();
-  const ehCarlosChagas = textoCompleto.includes("carlos chagas");
-  const nivelDoEvento = e.nivel ? e.nivel : (ehCarlosChagas ? "Auditório Carlos Chagas" : "Graduação");
-  return nivelDoEvento === filtroNivel;
+  return (e.nivel || "Graduação") === filtroNivel;
 }
 
 // Expande um evento em uma lista de datas "AAAA-MM-DD", uma para cada dia
