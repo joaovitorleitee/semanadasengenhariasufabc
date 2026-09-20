@@ -71,6 +71,7 @@ export default function SiteFooter({ content }) {
               ["/engenharias", "Engenharias"],
               ["/noticias", "Notícias"],
               ["/patrocinadores", "Patrocinadores"],
+              ["/contato", "Fale Conosco"],
             ].map(([href, label]) => (
               <Link
                 key={href}

@@ -15,6 +15,7 @@ const LINKS = [
   { href: "/engenharias", label: "Engenharias" },
   { href: "/noticias", label: "Notícias" },
   { href: "/patrocinadores", label: "Patrocinadores" },
+  { href: "/contato", label: "Fale Conosco" },
 ];
 
 export default function SiteHeader() {
@@ -222,9 +223,9 @@ export default function SiteHeader() {
           box-shadow: 0 4px 14px rgba(234, 179, 8, 0.5) !important;
         }
 
-        @media (min-width: 1081px) { .nav-mobile { display: none; } }
+        @media (min-width: 1181px) { .nav-mobile { display: none; } }
 
-        @media (max-width: 1080px) {
+        @media (max-width: 1180px) {
           .nav-desktop { display: none !important; }
           .nav-toggle-group { display: flex !important; }
         }
