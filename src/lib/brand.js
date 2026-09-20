@@ -57,8 +57,10 @@ export const BRAND = {
 // Categorias usadas no formulário de posts/notícias do painel admin.
 export const CATEGORIES = ["Comunicado", "Palestra", "Minicurso", "Patrocínio", "Ação Social", "Geral"];
 
-// Níveis de patrocínio, do maior para o menor.
-export const SPONSOR_TIERS = ["Diamante", "Ouro", "Prata", "Bronze", "Apoio", "Cobre"];
+// Níveis de patrocínio, do maior para o menor investimento. Esta ordem define
+// a sequência dos grupos na página de Patrocinadores e as opções do formulário
+// do admin. "Apoio" fica por último (suporte sem investimento significativo).
+export const SPONSOR_TIERS = ["Diamante", "Ouro", "Prata", "Bronze", "Cobre", "Apoio"];
 
 // Categorias usadas na Programação (agenda de palestras/minicursos/eventos).
 export const EVENT_CATEGORIES = ["Palestra", "Minicurso", "Workshop", "Mesa-redonda", "Visita técnica", "Outro"];
